@@ -9,9 +9,10 @@ Next.js 16 app with TypeScript, Tailwind CSS, and App Router.
 - `npm run lint` — run ESLint
 - `npm run format` — format with Prettier
 
-## Design
+## Guidelines
 
-When doing any UI work, read `docs/DESIGN.md` first and follow the design system defined there.
+- Before writing any code, read `docs/ENGINEERING.md` and follow the engineering guidelines
+- When doing UI work, also read `docs/DESIGN.md` and follow the design system
 
 ## Next.js 16
 
