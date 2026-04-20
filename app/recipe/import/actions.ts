@@ -1,7 +1,10 @@
 "use server";
 
 import { getSettings } from "@/lib/settings";
-import { extractRecipeFromFile } from "@/lib/ai/extract-recipe";
+import {
+  extractRecipeFromFile,
+  extractRecipeFromText,
+} from "@/lib/ai/extract-recipe";
 import type { ExtractedRecipe } from "@/lib/ai/types";
 
 export interface ImportState {
@@ -19,7 +22,7 @@ const ALLOWED_TYPES = [
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
-export async function extractRecipe(
+export async function extractRecipeFromUpload(
   _prevState: ImportState,
   formData: FormData,
 ): Promise<ImportState> {
@@ -51,9 +54,7 @@ export async function extractRecipe(
   if (!settings) {
     return {
       status: "error",
-      errors: [
-        "Please configure your AI provider in Settings first.",
-      ],
+      errors: ["Please configure your AI provider in Settings first."],
       data: null,
     };
   }
@@ -67,6 +68,45 @@ export async function extractRecipe(
       settings,
     );
 
+    return { status: "success", errors: [], data: recipe };
+  } catch (error) {
+    return {
+      status: "error",
+      errors: [
+        error instanceof Error
+          ? error.message
+          : "Failed to extract recipe. Please try again.",
+      ],
+      data: null,
+    };
+  }
+}
+
+export async function extractRecipeFromPaste(
+  _prevState: ImportState,
+  formData: FormData,
+): Promise<ImportState> {
+  const text = formData.get("text")?.toString().trim() ?? "";
+
+  if (!text) {
+    return {
+      status: "error",
+      errors: ["Please paste some recipe text."],
+      data: null,
+    };
+  }
+
+  const settings = await getSettings();
+  if (!settings) {
+    return {
+      status: "error",
+      errors: ["Please configure your AI provider in Settings first."],
+      data: null,
+    };
+  }
+
+  try {
+    const recipe = await extractRecipeFromText(text, settings);
     return { status: "success", errors: [], data: recipe };
   } catch (error) {
     return {

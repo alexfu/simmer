@@ -1,8 +1,8 @@
 import type { Settings } from "@/app/generated/prisma/client";
 import type { ExtractedRecipe } from "@/lib/ai/types";
-import { extractWithOpenAI } from "@/lib/ai/providers/openai";
-import { extractWithGemini } from "@/lib/ai/providers/gemini";
-import { extractWithAnthropic } from "@/lib/ai/providers/anthropic";
+import { extractWithOpenAI, extractWithOpenAIText } from "@/lib/ai/providers/openai";
+import { extractWithGemini, extractWithGeminiText } from "@/lib/ai/providers/gemini";
+import { extractWithAnthropic, extractWithAnthropicText } from "@/lib/ai/providers/anthropic";
 
 function getApiKey(settings: Settings): string {
   const keyMap: Record<string, string | null> = {
@@ -48,7 +48,7 @@ function parseResponse(raw: string): ExtractedRecipe {
           quantity: Number(i.quantity ?? i.amount ?? i.qty ?? 1) || 1,
           unit: String(i.unit ?? i.measurement ?? "whole").trim() || "whole",
         }))
-        .filter((i) => i.name.length > 0)
+        .filter((i: { name: string }) => i.name.length > 0)
     : [];
 
   if (ingredients.length === 0) {
@@ -94,6 +94,31 @@ export async function extractRecipeFromFile(
       break;
     case "anthropic":
       raw = await extractWithAnthropic(apiKey, model, file.base64, file.mimeType);
+      break;
+    default:
+      throw new Error(`Unknown provider: ${settings.activeProvider}`);
+  }
+
+  return parseResponse(raw);
+}
+
+export async function extractRecipeFromText(
+  text: string,
+  settings: Settings,
+): Promise<ExtractedRecipe> {
+  const apiKey = getApiKey(settings);
+  const model = settings.activeModel;
+
+  let raw: string;
+  switch (settings.activeProvider) {
+    case "openai":
+      raw = await extractWithOpenAIText(apiKey, model, text);
+      break;
+    case "gemini":
+      raw = await extractWithGeminiText(apiKey, model, text);
+      break;
+    case "anthropic":
+      raw = await extractWithAnthropicText(apiKey, model, text);
       break;
     default:
       throw new Error(`Unknown provider: ${settings.activeProvider}`);

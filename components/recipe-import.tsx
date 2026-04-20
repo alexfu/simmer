@@ -2,8 +2,16 @@
 
 import { useActionState, useRef, useState } from "react";
 import { RecipeForm } from "@/components/recipe-form";
-import { extractRecipe, type ImportState } from "@/app/recipe/import/actions";
+import {
+  extractRecipeFromUpload,
+  extractRecipeFromPaste,
+  type ImportState,
+} from "@/app/recipe/import/actions";
 import { createRecipe } from "@/app/recipe/new/actions";
+
+type InputMode = "file" | "text";
+
+const initialState: ImportState = { status: "idle", errors: [], data: null };
 
 export function RecipeImport() {
   const [resetKey, setResetKey] = useState(0);
@@ -17,13 +25,20 @@ export function RecipeImport() {
 }
 
 function RecipeImportInner({ onReset }: { onReset: () => void }) {
-  const [state, formAction, isPending] = useActionState<ImportState, FormData>(
-    extractRecipe,
-    { status: "idle", errors: [], data: null },
-  );
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<InputMode>("file");
+
+  const [fileState, fileAction, filePending] = useActionState<
+    ImportState,
+    FormData
+  >(extractRecipeFromUpload, initialState);
+
+  const [textState, textAction, textPending] = useActionState<
+    ImportState,
+    FormData
+  >(extractRecipeFromPaste, initialState);
+
+  const state = mode === "file" ? fileState : textState;
+  const isPending = mode === "file" ? filePending : textPending;
 
   if (state.status === "success" && state.data) {
     return (
@@ -45,9 +60,34 @@ function RecipeImportInner({ onReset }: { onReset: () => void }) {
   }
 
   return (
-    <form action={formAction} className="mt-8">
+    <div className="mt-8">
+      <div className="flex gap-1 rounded-lg border border-border bg-surface p-1">
+        <button
+          type="button"
+          onClick={() => setMode("file")}
+          className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+            mode === "file"
+              ? "bg-primary text-surface"
+              : "text-muted hover:text-foreground"
+          }`}
+        >
+          Upload File
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("text")}
+          className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+            mode === "text"
+              ? "bg-primary text-surface"
+              : "text-muted hover:text-foreground"
+          }`}
+        >
+          Paste Text
+        </button>
+      </div>
+
       {state.errors.length > 0 && (
-        <div className="mb-6 rounded-lg border border-primary/30 bg-primary/5 p-4">
+        <div className="mt-6 rounded-lg border border-primary/30 bg-primary/5 p-4">
           <ul className="space-y-1 text-sm text-primary">
             {state.errors.map((error, i) => (
               <li key={i}>{error}</li>
@@ -56,6 +96,28 @@ function RecipeImportInner({ onReset }: { onReset: () => void }) {
         </div>
       )}
 
+      {mode === "file" ? (
+        <FileUpload action={fileAction} isPending={isPending} />
+      ) : (
+        <TextInput action={textAction} isPending={isPending} />
+      )}
+    </div>
+  );
+}
+
+function FileUpload({
+  action,
+  isPending,
+}: {
+  action: (formData: FormData) => void;
+  isPending: boolean;
+}) {
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  return (
+    <form action={action} className="mt-6">
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <label
         htmlFor="file"
@@ -120,6 +182,37 @@ function RecipeImportInner({ onReset }: { onReset: () => void }) {
       <button
         type="submit"
         disabled={isPending || !fileName}
+        className="mt-6 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isPending ? "Extracting recipe..." : "Extract Recipe"}
+      </button>
+    </form>
+  );
+}
+
+function TextInput({
+  action,
+  isPending,
+}: {
+  action: (formData: FormData) => void;
+  isPending: boolean;
+}) {
+  const [text, setText] = useState("");
+
+  return (
+    <form action={action} className="mt-6">
+      <textarea
+        name="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Paste your recipe text here..."
+        rows={12}
+        className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+      />
+
+      <button
+        type="submit"
+        disabled={isPending || !text.trim()}
         className="mt-6 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isPending ? "Extracting recipe..." : "Extract Recipe"}
