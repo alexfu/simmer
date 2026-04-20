@@ -97,8 +97,7 @@ async function main() {
   await prisma.recipe.create({
     data: {
       title: "Blueberry Pancakes",
-      description:
-        "Fluffy buttermilk pancakes studded with fresh blueberries.",
+      description: "Fluffy buttermilk pancakes studded with fresh blueberries.",
       servings: 6,
       ingredients: {
         create: [

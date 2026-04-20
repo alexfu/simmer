@@ -44,11 +44,11 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run build` | Production build |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format with Prettier |
-| `npx prisma migrate dev` | Run migrations |
-| `npx prisma studio` | Open Prisma Studio (DB GUI) |
+| Command                  | Description                 |
+| ------------------------ | --------------------------- |
+| `npm run dev`            | Start dev server            |
+| `npm run build`          | Production build            |
+| `npm run lint`           | Run ESLint                  |
+| `npm run format`         | Format with Prettier        |
+| `npx prisma migrate dev` | Run migrations              |
+| `npx prisma studio`      | Open Prisma Studio (DB GUI) |
