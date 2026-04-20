@@ -41,17 +41,14 @@ function parseResponse(raw: string): ExtractedRecipe {
     ? parsed.ingredients
         .filter(
           (i: unknown) =>
-            typeof i === "object" &&
-            i !== null &&
-            "name" in i &&
-            "quantity" in i &&
-            "unit" in i,
+            typeof i === "object" && i !== null && ("name" in i || "ingredient" in i),
         )
-        .map((i: { name: string; quantity: number; unit: string }) => ({
-          name: String(i.name).trim(),
-          quantity: Number(i.quantity) || 1,
-          unit: String(i.unit).trim() || "whole",
+        .map((i: Record<string, unknown>) => ({
+          name: String(i.name ?? i.ingredient ?? "").trim(),
+          quantity: Number(i.quantity ?? i.amount ?? i.qty ?? 1) || 1,
+          unit: String(i.unit ?? i.measurement ?? "whole").trim() || "whole",
         }))
+        .filter((i) => i.name.length > 0)
     : [];
 
   if (ingredients.length === 0) {
@@ -60,13 +57,15 @@ function parseResponse(raw: string): ExtractedRecipe {
 
   const instructions = Array.isArray(parsed.instructions)
     ? parsed.instructions
-        .filter(
-          (i: unknown) =>
-            typeof i === "object" && i !== null && "text" in i,
-        )
-        .map((i: { text: string }) => ({
-          text: String(i.text).trim(),
-        }))
+        .map((i: unknown) => {
+          if (typeof i === "string") return { text: i.trim() };
+          if (typeof i === "object" && i !== null) {
+            const obj = i as Record<string, unknown>;
+            const text = obj.text ?? obj.instruction ?? obj.step ?? obj.description;
+            if (typeof text === "string") return { text: text.trim() };
+          }
+          return { text: "" };
+        })
         .filter((i: { text: string }) => i.text.length > 0)
     : [];
 
@@ -83,16 +82,18 @@ export async function extractRecipeFromFile(
 ): Promise<ExtractedRecipe> {
   const apiKey = getApiKey(settings);
 
+  const model = settings.activeModel;
+
   let raw: string;
   switch (settings.activeProvider) {
     case "openai":
-      raw = await extractWithOpenAI(apiKey, file.base64, file.mimeType);
+      raw = await extractWithOpenAI(apiKey, model, file.base64, file.mimeType);
       break;
     case "gemini":
-      raw = await extractWithGemini(apiKey, file.base64, file.mimeType);
+      raw = await extractWithGemini(apiKey, model, file.base64, file.mimeType);
       break;
     case "anthropic":
-      raw = await extractWithAnthropic(apiKey, file.base64, file.mimeType);
+      raw = await extractWithAnthropic(apiKey, model, file.base64, file.mimeType);
       break;
     default:
       throw new Error(`Unknown provider: ${settings.activeProvider}`);

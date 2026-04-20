@@ -19,6 +19,7 @@ function buildFileContent(base64Data: string, mimeType: string) {
 
 export async function extractWithOpenAI(
   apiKey: string,
+  model: string,
   base64Data: string,
   mimeType: string,
 ): Promise<string> {
@@ -29,7 +30,7 @@ export async function extractWithOpenAI(
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: "gpt-4o",
+      model,
       messages: [
         {
           role: "user",
@@ -39,7 +40,7 @@ export async function extractWithOpenAI(
           ],
         },
       ],
-      max_tokens: 4096,
+      max_completion_tokens: 4096,
     }),
   });
 

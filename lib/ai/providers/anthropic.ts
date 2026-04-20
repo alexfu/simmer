@@ -4,6 +4,7 @@ type AnthropicMediaType = "image/jpeg" | "image/png" | "image/gif" | "image/webp
 
 export async function extractWithAnthropic(
   apiKey: string,
+  model: string,
   base64Data: string,
   mimeType: string,
 ): Promise<string> {
@@ -35,7 +36,7 @@ export async function extractWithAnthropic(
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
+      model,
       max_tokens: 4096,
       messages: [
         {

@@ -6,6 +6,7 @@ export default async function SettingsPage() {
 
   const initialData = {
     activeProvider: settings?.activeProvider ?? "openai",
+    activeModel: settings?.activeModel ?? "gpt-4o",
     openaiApiKey: settings?.openaiApiKey ?? "",
     geminiApiKey: settings?.geminiApiKey ?? "",
     anthropicApiKey: settings?.anthropicApiKey ?? "",

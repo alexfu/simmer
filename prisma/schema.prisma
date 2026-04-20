@@ -39,6 +39,7 @@ model Instruction {
 model Settings {
   id              String   @id @default("global")
   activeProvider  String   @default("openai")
+  activeModel     String   @default("gpt-4o")
   openaiApiKey    String?
   geminiApiKey    String?
   anthropicApiKey String?

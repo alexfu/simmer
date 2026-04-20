@@ -15,6 +15,7 @@ export async function saveSettings(
   formData: FormData,
 ): Promise<SettingsFormState> {
   const activeProvider = formData.get("activeProvider")?.toString() ?? "";
+  const activeModel = formData.get("activeModel")?.toString() ?? "";
   const apiKey = formData.get("apiKey")?.toString().trim() || null;
 
   const errors: string[] = [];
@@ -35,6 +36,7 @@ export async function saveSettings(
 
   const data = {
     activeProvider,
+    activeModel,
     openaiApiKey: existing?.openaiApiKey ?? null,
     geminiApiKey: existing?.geminiApiKey ?? null,
     anthropicApiKey: existing?.anthropicApiKey ?? null,

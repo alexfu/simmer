@@ -9,6 +9,7 @@ import {
 interface SettingsFormProps {
   initialData: {
     activeProvider: string;
+    activeModel: string;
     openaiApiKey: string;
     geminiApiKey: string;
     anthropicApiKey: string;
@@ -21,10 +22,46 @@ const PROVIDERS = [
   { value: "anthropic", label: "Anthropic", keyPlaceholder: "sk-ant-..." },
 ];
 
+const MODELS: Record<string, { value: string; label: string }[]> = {
+  openai: [
+    { value: "gpt-5.4", label: "GPT-5.4" },
+    { value: "gpt-5.4-mini", label: "GPT-5.4 Mini" },
+    { value: "gpt-5.4-nano", label: "GPT-5.4 Nano" },
+    { value: "gpt-4.1", label: "GPT-4.1" },
+    { value: "gpt-4.1-mini", label: "GPT-4.1 Mini" },
+    { value: "gpt-4.1-nano", label: "GPT-4.1 Nano" },
+    { value: "gpt-4o", label: "GPT-4o" },
+    { value: "gpt-4o-mini", label: "GPT-4o Mini" },
+    { value: "o3", label: "o3" },
+    { value: "o3-pro", label: "o3 Pro" },
+    { value: "o3-mini", label: "o3 Mini" },
+    { value: "o4-mini", label: "o4 Mini" },
+  ],
+  gemini: [
+    { value: "gemini-2.5-flash", label: "Gemini 2.5 Flash" },
+    { value: "gemini-2.5-pro", label: "Gemini 2.5 Pro" },
+    { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
+  ],
+  anthropic: [
+    { value: "claude-sonnet-4-20250514", label: "Claude Sonnet 4" },
+    { value: "claude-opus-4-20250514", label: "Claude Opus 4" },
+    { value: "claude-haiku-4-20250514", label: "Claude Haiku 4" },
+  ],
+};
+
+const DEFAULT_MODELS: Record<string, string> = {
+  openai: "gpt-4.1",
+  gemini: "gemini-2.5-flash",
+  anthropic: "claude-sonnet-4-20250514",
+};
+
 const inputClassName =
   "w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30";
 
-function getInitialKey(provider: string, data: SettingsFormProps["initialData"]): string {
+function getInitialKey(
+  provider: string,
+  data: SettingsFormProps["initialData"],
+): string {
   const map: Record<string, string> = {
     openai: data.openaiApiKey,
     gemini: data.geminiApiKey,
@@ -42,8 +79,17 @@ export function SettingsForm({ initialData }: SettingsFormProps) {
   const [activeProvider, setActiveProvider] = useState(
     initialData.activeProvider,
   );
+  const [activeModel, setActiveModel] = useState(initialData.activeModel);
 
-  const activeProviderConfig = PROVIDERS.find((p) => p.value === activeProvider);
+  const activeProviderConfig = PROVIDERS.find(
+    (p) => p.value === activeProvider,
+  );
+  const availableModels = MODELS[activeProvider] ?? [];
+
+  function handleProviderChange(provider: string) {
+    setActiveProvider(provider);
+    setActiveModel(DEFAULT_MODELS[provider]);
+  }
 
   return (
     <form action={formAction} className="mt-8 space-y-8">
@@ -78,7 +124,7 @@ export function SettingsForm({ initialData }: SettingsFormProps) {
                 name="activeProvider"
                 value={provider.value}
                 checked={activeProvider === provider.value}
-                onChange={() => setActiveProvider(provider.value)}
+                onChange={() => handleProviderChange(provider.value)}
                 className="accent-primary"
               />
               <span className="text-sm font-medium text-foreground">
@@ -86,6 +132,26 @@ export function SettingsForm({ initialData }: SettingsFormProps) {
               </span>
             </label>
           ))}
+        </div>
+      </section>
+
+      <section>
+        <h2 className="font-serif text-xl font-semibold text-foreground">
+          Model
+        </h2>
+        <div className="mt-4">
+          <select
+            name="activeModel"
+            value={activeModel}
+            onChange={(e) => setActiveModel(e.target.value)}
+            className={inputClassName}
+          >
+            {availableModels.map((model) => (
+              <option key={model.value} value={model.value}>
+                {model.label}
+              </option>
+            ))}
+          </select>
         </div>
       </section>
 
