@@ -13,12 +13,20 @@ export default async function HomePage() {
         <h1 className="font-serif text-3xl font-bold text-foreground">
           My Recipes
         </h1>
-        <Link
-          href="/recipe/new"
-          className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-surface shadow-sm transition-colors hover:bg-primary-hover"
-        >
-          + Add Recipe
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/recipe/import"
+            className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-border"
+          >
+            Import Recipe
+          </Link>
+          <Link
+            href="/recipe/new"
+            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-surface shadow-sm transition-colors hover:bg-primary-hover"
+          >
+            + Add Recipe
+          </Link>
+        </div>
       </div>
 
       {recipes.length === 0 ? (

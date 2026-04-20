@@ -1,0 +1,22 @@
+import { getSettings } from "@/lib/settings";
+import { SettingsForm } from "@/components/settings-form";
+
+export default async function SettingsPage() {
+  const settings = await getSettings();
+
+  const initialData = {
+    activeProvider: settings?.activeProvider ?? "openai",
+    openaiApiKey: settings?.openaiApiKey ?? "",
+    geminiApiKey: settings?.geminiApiKey ?? "",
+    anthropicApiKey: settings?.anthropicApiKey ?? "",
+  };
+
+  return (
+    <main className="mx-auto w-full max-w-5xl px-6 py-10">
+      <h1 className="font-serif text-3xl font-bold text-foreground">
+        Settings
+      </h1>
+      <SettingsForm initialData={initialData} />
+    </main>
+  );
+}

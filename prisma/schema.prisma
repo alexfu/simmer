@@ -35,3 +35,12 @@ model Instruction {
   recipeId String
   recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
+
+model Settings {
+  id              String   @id @default("global")
+  activeProvider  String   @default("openai")
+  openaiApiKey    String?
+  geminiApiKey    String?
+  anthropicApiKey String?
+  updatedAt       DateTime @updatedAt
+}
