@@ -1,6 +1,8 @@
 import Image from "next/image";
+import Link from "next/link";
 
 interface RecipeCardProps {
+  id: string;
   title: string;
   description: string | null;
   imageUrl: string | null;
@@ -8,13 +10,17 @@ interface RecipeCardProps {
 }
 
 export function RecipeCard({
+  id,
   title,
   description,
   imageUrl,
   servings,
 }: RecipeCardProps) {
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-shadow hover:shadow-md">
+    <Link
+      href={`/recipe/${id}`}
+      className="block overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-shadow hover:shadow-md"
+    >
       <div className="relative aspect-[4/3] bg-border">
         {imageUrl ? (
           <Image
@@ -41,6 +47,6 @@ export function RecipeCard({
           {servings} {servings === 1 ? "serving" : "servings"}
         </p>
       </div>
-    </div>
+    </Link>
   );
 }
