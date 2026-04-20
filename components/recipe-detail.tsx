@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ServingsAdjuster } from "@/components/servings-adjuster";
 import { IngredientList } from "@/components/ingredient-list";
 import { InstructionList } from "@/components/instruction-list";
 
 interface RecipeDetailProps {
   recipe: {
+    id: string;
     title: string;
     description: string | null;
     imageUrl: string | null;
@@ -45,9 +47,17 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
         </div>
       )}
 
-      <h1 className="font-serif text-3xl font-bold text-foreground">
-        {recipe.title}
-      </h1>
+      <div className="flex items-baseline justify-between">
+        <h1 className="font-serif text-3xl font-bold text-foreground">
+          {recipe.title}
+        </h1>
+        <Link
+          href={`/recipe/${recipe.id}/edit`}
+          className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-border"
+        >
+          Edit
+        </Link>
+      </div>
 
       {recipe.description && (
         <p className="mt-3 text-muted">{recipe.description}</p>

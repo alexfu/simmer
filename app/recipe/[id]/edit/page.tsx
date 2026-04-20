@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { RecipeDetail } from "@/components/recipe-detail";
+import { RecipeForm } from "@/components/recipe-form";
+import { updateRecipe } from "@/app/recipe/[id]/edit/actions";
 
-interface RecipePageProps {
+interface EditRecipePageProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function RecipePage({ params }: RecipePageProps) {
+export default async function EditRecipePage({ params }: EditRecipePageProps) {
   const { id } = await params;
 
   const recipe = await prisma.recipe.findUnique({
@@ -21,28 +22,28 @@ export default async function RecipePage({ params }: RecipePageProps) {
     notFound();
   }
 
-  const serializedRecipe = {
-    id: recipe.id,
+  const initialData = {
     title: recipe.title,
     description: recipe.description,
-    imageUrl: recipe.imageUrl,
     servings: recipe.servings,
     ingredients: recipe.ingredients.map((i) => ({
-      id: i.id,
       name: i.name,
       quantity: i.quantity.toNumber(),
       unit: i.unit,
     })),
     instructions: recipe.instructions.map((i) => ({
-      id: i.id,
-      step: i.step,
       text: i.text,
     })),
   };
 
+  const action = updateRecipe.bind(null, id);
+
   return (
     <main className="mx-auto w-full max-w-5xl px-6 py-10">
-      <RecipeDetail recipe={serializedRecipe} />
+      <h1 className="font-serif text-3xl font-bold text-foreground">
+        Edit Recipe
+      </h1>
+      <RecipeForm action={action} initialData={initialData} />
     </main>
   );
 }
