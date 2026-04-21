@@ -239,7 +239,7 @@ function FileUpload({
             onChange={(e) => onDiagnosticsChange(e.target.checked)}
             className="accent-primary"
           />
-          <span className="text-sm text-muted">Save diagnostic log</span>
+          <span className="text-sm text-muted">Enable diagnostic log</span>
         </label>
       </div>
     </form>
@@ -287,7 +287,7 @@ function TextInput({
             onChange={(e) => onDiagnosticsChange(e.target.checked)}
             className="accent-primary"
           />
-          <span className="text-sm text-muted">Save diagnostic log</span>
+          <span className="text-sm text-muted">Enable diagnostic log</span>
         </label>
       </div>
     </form>
