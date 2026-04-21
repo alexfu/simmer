@@ -28,6 +28,8 @@ Rules:
 - Use common abbreviations for units (tbsp, tsp, oz, lb, g, ml, cups)
 - If a quantity is "to taste" or not specified, use 1 with unit "to taste"
 - Remove sub-recipe references that are not actual ingredients (e.g. "White Sauce (right)" or "see below" references). The sub-recipe's own ingredients should already be listed individually.
+- Do NOT extract notes, tips, or cooking advice as ingredients (e.g. "Needs heat- add more jalapeno" is advice, not an ingredient)
+- If the instructions mention ingredients that are not in the ingredient list (e.g. garnishes like cilantro, sour cream), add them to the ingredients list with quantity "1" and unit "to taste"
 - Keep instructions as plain text — do not add any special formatting or tags
 - Return ONLY the JSON object, no markdown formatting or code blocks`;
 
@@ -70,6 +72,7 @@ Rules:
 - The quantity in the tag should use fraction notation (e.g. "2/3", "1/4") or whole numbers — NOT decimals
 - Tag ALL ingredient references that mention a specific quantity, including when the full amount is used in one step
 - If an instruction mentions an ingredient without a specific amount (e.g. "season to taste"), do NOT add a tag
+- Do NOT tag quantities in explanatory or personal notes that describe how something was done rather than directing the cook (e.g. "I initially added 4 cups broth then added 2 more" is explaining technique, not a separate use of the ingredient)
 - Do not modify the ingredients array — only modify instruction text
 - Return the complete recipe JSON with updated instructions
 - Return ONLY the JSON object, no markdown formatting or code blocks
