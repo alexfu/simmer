@@ -14,11 +14,11 @@ interface IngredientListProps {
 
 export function IngredientList({ ingredients, scale }: IngredientListProps) {
   return (
-    <ul className="mt-4 space-y-2">
+    <ul className="mt-4 space-y-3">
       {ingredients.map((ingredient) => (
         <li
           key={ingredient.id}
-          className="flex items-baseline gap-2 text-foreground"
+          className="flex items-baseline gap-2 border-b border-border/50 pb-3 text-foreground last:border-0 last:pb-0"
         >
           <span className="font-medium">
             {formatQuantity(ingredient.quantity, scale)}

@@ -7,22 +7,22 @@ interface ServingsAdjusterProps {
 
 export function ServingsAdjuster({ servings, onChange }: ServingsAdjusterProps) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-4">
       <span className="text-sm font-medium text-foreground">Servings</span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <button
           onClick={() => onChange(Math.max(1, servings - 1))}
           disabled={servings <= 1}
-          className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-surface text-foreground transition-colors hover:bg-border disabled:opacity-40 disabled:cursor-not-allowed"
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-lg text-foreground transition-colors hover:bg-border disabled:opacity-40 disabled:cursor-not-allowed"
         >
           &minus;
         </button>
-        <span className="w-8 text-center font-medium text-foreground">
+        <span className="w-8 text-center text-lg font-medium text-foreground">
           {servings}
         </span>
         <button
           onClick={() => onChange(servings + 1)}
-          className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-surface text-foreground transition-colors hover:bg-border"
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-lg text-foreground transition-colors hover:bg-border"
         >
           +
         </button>

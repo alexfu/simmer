@@ -56,7 +56,7 @@ const DEFAULT_MODELS: Record<string, string> = {
 };
 
 const inputClassName =
-  "w-full rounded-md border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30";
+  "w-full rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30";
 
 function getInitialKey(
   provider: string,
@@ -181,7 +181,7 @@ export function SettingsForm({ initialData }: SettingsFormProps) {
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
       >
         {isPending ? "Saving..." : "Save Settings"}
       </button>

@@ -65,7 +65,7 @@ export function QuantityInput({
           }
         }}
         required={required}
-        className={`w-full rounded-md border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+        className={`w-full rounded-md border bg-surface px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 ${
           isInvalid && isFocused
             ? "border-primary focus:border-primary"
             : "border-border focus:border-primary"

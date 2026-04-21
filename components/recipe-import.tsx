@@ -182,7 +182,7 @@ function FileUpload({
       <button
         type="submit"
         disabled={isPending || !fileName}
-        className="mt-6 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-6 w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
       >
         {isPending ? "Extracting recipe..." : "Extract Recipe"}
       </button>
@@ -213,7 +213,7 @@ function TextInput({
       <button
         type="submit"
         disabled={isPending || !text.trim()}
-        className="mt-6 rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-6 w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
       >
         {isPending ? "Extracting recipe..." : "Extract Recipe"}
       </button>

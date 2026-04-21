@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import TextareaAutosize from "react-textarea-autosize";
 import { buildIngredientTag } from "@/lib/parse-instruction-tags";
 import { QuantityInput } from "@/components/quantity-input";
 
@@ -50,7 +51,7 @@ export function InstructionFieldList({
       <button
         type="button"
         onClick={addRow}
-        className="rounded-md border border-border px-3 py-2 text-sm text-foreground transition-colors hover:bg-border"
+        className="w-full rounded-lg border border-dashed border-border px-4 py-3 text-sm font-medium text-muted transition-colors hover:border-primary/40 hover:text-foreground sm:w-auto"
       >
         + Add Step
       </button>
@@ -100,15 +101,15 @@ function InstructionRow({
         <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-surface">
           {index + 1}
         </span>
-        <textarea
+        <TextareaAutosize
           ref={textareaRef}
           name="instruction-text"
           placeholder={`Step ${index + 1}`}
           value={text}
           onChange={(e) => onChange(e.target.value)}
           required
-          rows={2}
-          className="min-h-16 w-full flex-1 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          minRows={2}
+          className="w-full flex-1 resize-none rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
         {onRemove && (
           <button

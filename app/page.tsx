@@ -9,20 +9,20 @@ export default async function HomePage() {
 
   return (
     <main className="mx-auto w-full max-w-5xl px-6 py-10">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-baseline sm:justify-between">
         <h1 className="font-serif text-3xl font-bold text-foreground">
           My Recipes
         </h1>
         <div className="flex gap-3">
           <Link
             href="/recipe/import"
-            className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-border"
+            className="flex-1 rounded-lg border border-border px-5 py-3 text-center text-sm font-medium text-foreground shadow-sm transition-colors hover:bg-border sm:flex-none sm:py-2.5"
           >
             Import Recipe
           </Link>
           <Link
             href="/recipe/new"
-            className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-surface shadow-sm transition-colors hover:bg-primary-hover"
+            className="flex-1 rounded-lg bg-primary px-5 py-3 text-center text-sm font-medium text-surface shadow-sm transition-colors hover:bg-primary-hover sm:flex-none sm:py-2.5"
           >
             + Add Recipe
           </Link>
