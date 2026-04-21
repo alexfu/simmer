@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { buildIngredientTag } from "@/lib/parse-instruction-tags";
+import { QuantityInput } from "@/components/quantity-input";
 
 interface IngredientOption {
   name: string;
@@ -187,15 +188,11 @@ function IngredientPicker({
             How much {selected.name}?
           </p>
           <div className="flex items-center gap-2">
-            <input
-              type="number"
-              step="any"
-              min="0"
+            <QuantityInput
               value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
+              onChange={setQuantity}
               placeholder="Qty"
-              autoFocus
-              className="w-20 rounded-md border border-border bg-surface px-2 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-20"
             />
             <span className="text-sm text-muted">{selected.unit}</span>
             <button
