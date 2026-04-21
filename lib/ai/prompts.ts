@@ -23,8 +23,8 @@ Rules:
 - Whole numbers should be plain strings (e.g. "2", "8")
 - Mixed numbers should use addition (e.g. "1+1/2" for one and a half)
 - If servings are not mentioned, default to 4
-- Each instruction should be a meaningful step — combine trivially short actions (like "Stir well" or "Drain") into the preceding or following step rather than making them standalone
-- Exclude personal commentary, tips, or opinions from instructions (e.g. "I like to..." or "but that is optional") — only include actionable cooking steps
+- Each instruction should be a meaningful step — a single-word action like "Drain." can be appended to the previous step, but do not combine multiple distinct actions into one step
+- Preserve all information from the original text — do not remove tips, notes, or optional steps
 - Use common abbreviations for units (tbsp, tsp, oz, lb, g, ml, cups)
 - If a quantity is "to taste" or not specified, use 1 with unit "to taste"
 - Remove sub-recipe references that are not actual ingredients (e.g. "White Sauce (right)" or "see below" references). The sub-recipe's own ingredients should already be listed individually.
