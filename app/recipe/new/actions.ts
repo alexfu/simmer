@@ -22,6 +22,7 @@ export async function createRecipe(
     data: {
       title: data.title,
       description: data.description,
+      notes: data.notes,
       servings: data.servings,
       ingredients: {
         create: data.ingredients.map((ing) => ({
@@ -31,9 +32,10 @@ export async function createRecipe(
         })),
       },
       instructions: {
-        create: data.instructions.map((text, index) => ({
+        create: data.instructions.map((inst, index) => ({
           step: index + 1,
-          text,
+          text: inst.text,
+          note: inst.note,
         })),
       },
     },

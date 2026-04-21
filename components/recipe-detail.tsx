@@ -13,6 +13,7 @@ interface RecipeDetailProps {
     id: string;
     title: string;
     description: string | null;
+    notes: string | null;
     imageUrl: string | null;
     servings: number;
     ingredients: {
@@ -25,6 +26,7 @@ interface RecipeDetailProps {
       id: string;
       step: number;
       text: string;
+      note?: string | null;
     }[];
   };
 }
@@ -86,6 +88,17 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
           scale={scale}
         />
       </section>
+
+      {recipe.notes && (
+        <section className="mt-8">
+          <h2 className="font-serif text-xl font-semibold text-foreground">
+            Notes
+          </h2>
+          <p className="mt-4 whitespace-pre-line text-sm text-muted">
+            {recipe.notes}
+          </p>
+        </section>
+      )}
     </article>
   );
 }

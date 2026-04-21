@@ -9,12 +9,13 @@ Return a JSON object with this structure:
 {
   "title": "string",
   "description": "string or null - brief description of the dish",
+  "notes": "string or null - general tips, variations, or notes about the recipe",
   "servings": number (integer, at least 1),
   "ingredients": [
     { "name": "string", "quantity": "string - use fractions like 2/3 or 1/4 when exact, or whole numbers like 2", "unit": "string" }
   ],
   "instructions": [
-    { "text": "string" }
+    { "text": "string", "note": "string or null - optional tip or note for this specific step" }
   ]
 }
 
@@ -24,7 +25,9 @@ Rules:
 - Mixed numbers should use addition (e.g. "1+1/2" for one and a half)
 - If servings are not mentioned, default to 4
 - Each instruction should be a meaningful step — sentences that elaborate on, clarify, or provide detail about the same action should be kept together as one step (e.g. "Add broth and all ingredients except cheese and pasta. Add pasta last and ensure it's submerged. I initially added 4 cups then added 2 more to cover." is one step). Only create a new step when the cook moves on to a genuinely different action.
-- Preserve all information from the original text — do not remove tips, notes, or optional steps
+- Preserve all information from the original text
+- Tips sections (e.g. "Tips & Upgrades") should go in the recipe-level "notes" field, not as instruction steps
+- Inline tips within a step (e.g. "Optional: thicken with cornstarch") should go in that step's "note" field, not in the instruction text
 - Use common abbreviations for units (tbsp, tsp, oz, lb, g, ml, cups)
 - If a quantity is a range (e.g. "6-8", "2 to 3"), use the higher value (e.g. "8", "3")
 - If a quantity is "to taste" or not specified, use 1 with unit "to taste"

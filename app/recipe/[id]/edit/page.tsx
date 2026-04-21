@@ -25,6 +25,7 @@ export default async function EditRecipePage({ params }: EditRecipePageProps) {
   const initialData = {
     title: recipe.title,
     description: recipe.description,
+    notes: recipe.notes,
     servings: recipe.servings,
     ingredients: recipe.ingredients.map((i) => ({
       name: i.name,
@@ -33,6 +34,7 @@ export default async function EditRecipePage({ params }: EditRecipePageProps) {
     })),
     instructions: recipe.instructions.map((i) => ({
       text: i.text,
+      note: i.note,
     })),
   };
 

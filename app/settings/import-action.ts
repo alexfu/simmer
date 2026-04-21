@@ -13,7 +13,8 @@ interface RecipeData {
   servings?: number;
   imageUrl?: string | null;
   ingredients: { name: string; quantity: string | number; unit: string }[];
-  instructions: { step?: number; text: string }[];
+  notes?: string | null;
+  instructions: { step?: number; text: string; note?: string | null }[];
 }
 
 export async function importRecipes(json: string): Promise<ImportResult> {
@@ -44,6 +45,7 @@ export async function importRecipes(json: string): Promise<ImportResult> {
       data: {
         title: recipe.title,
         description: recipe.description ?? null,
+        notes: recipe.notes ?? null,
         servings: recipe.servings ?? 1,
         imageUrl: recipe.imageUrl ?? null,
         ingredients: {
@@ -61,6 +63,7 @@ export async function importRecipes(json: string): Promise<ImportResult> {
             .map((i, index) => ({
               step: i.step ?? index + 1,
               text: i.text,
+              note: i.note ?? null,
             })),
         },
       },

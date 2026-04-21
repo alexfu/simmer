@@ -3,9 +3,10 @@ import { parseQuantityExpression } from "@/lib/parse-quantity";
 export interface ParsedRecipeData {
   title: string;
   description: string | null;
+  notes: string | null;
   servings: number;
   ingredients: { name: string; quantity: string; unit: string }[];
-  instructions: string[];
+  instructions: { text: string; note: string | null }[];
 }
 
 export function parseRecipeForm(formData: FormData): {
@@ -14,6 +15,7 @@ export function parseRecipeForm(formData: FormData): {
 } {
   const title = formData.get("title")?.toString().trim() ?? "";
   const description = formData.get("description")?.toString().trim() || null;
+  const notes = formData.get("recipe-notes")?.toString().trim() || null;
   const servingsRaw = Number(formData.get("servings"));
   const servings =
     Number.isFinite(servingsRaw) && servingsRaw >= 1
@@ -24,6 +26,7 @@ export function parseRecipeForm(formData: FormData): {
   const quantities = formData.getAll("ingredient-quantity").map((v) => v.toString().trim());
   const units = formData.getAll("ingredient-unit").map((v) => v.toString().trim());
   const instructionTexts = formData.getAll("instruction-text").map((v) => v.toString().trim());
+  const instructionNotes = formData.getAll("instruction-note").map((v) => v.toString().trim());
 
   const errors: string[] = [];
 
@@ -63,7 +66,12 @@ export function parseRecipeForm(formData: FormData): {
     }
   }
 
-  const instructions = instructionTexts.filter((text) => text.length > 0);
+  const instructions = instructionTexts
+    .map((text, i) => ({
+      text,
+      note: instructionNotes[i] || null,
+    }))
+    .filter((inst) => inst.text.length > 0);
 
   if (instructions.length === 0) {
     errors.push("At least one instruction is required.");
@@ -74,7 +82,7 @@ export function parseRecipeForm(formData: FormData): {
   }
 
   return {
-    data: { title, description, servings, ingredients, instructions },
+    data: { title, description, notes, servings, ingredients, instructions },
     errors: [],
   };
 }

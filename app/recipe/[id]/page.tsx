@@ -25,6 +25,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
     id: recipe.id,
     title: recipe.title,
     description: recipe.description,
+    notes: recipe.notes,
     imageUrl: recipe.imageUrl,
     servings: recipe.servings,
     ingredients: recipe.ingredients.map((i) => ({
@@ -37,6 +38,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
       id: i.id,
       step: i.step,
       text: i.text,
+      note: i.note,
     })),
   };
 

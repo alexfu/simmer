@@ -14,14 +14,20 @@ interface IngredientRow {
   unit: string;
 }
 
+interface InstructionRow {
+  text: string;
+  note: string;
+}
+
 interface RecipeFormProps {
   action: (prevState: FormState, formData: FormData) => Promise<FormState>;
   initialData?: {
     title: string;
     description: string | null;
+    notes: string | null;
     servings: number;
     ingredients: { name: string; quantity: string; unit: string }[];
-    instructions: { text: string }[];
+    instructions: { text: string; note?: string | null }[];
   };
 }
 
@@ -44,10 +50,13 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
       : [{ name: "", quantity: "", unit: "" }],
   );
 
-  const [instructions, setInstructions] = useState<string[]>(
+  const [instructions, setInstructions] = useState<InstructionRow[]>(
     initialData
-      ? initialData.instructions.map((i) => i.text)
-      : [""],
+      ? initialData.instructions.map((i) => ({
+          text: i.text,
+          note: i.note ?? "",
+        }))
+      : [{ text: "", note: "" }],
   );
 
   return (
@@ -124,6 +133,19 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
           instructions={instructions}
           ingredients={ingredients.map((i) => ({ name: i.name, unit: i.unit }))}
           onChange={setInstructions}
+        />
+      </section>
+
+      <section>
+        <h2 className="font-serif text-xl font-semibold text-foreground">
+          Notes
+        </h2>
+        <textarea
+          name="recipe-notes"
+          rows={4}
+          defaultValue={initialData?.notes ?? ""}
+          placeholder="General tips, variations, or notes about this recipe..."
+          className={`mt-4 ${inputClassName}`}
         />
       </section>
 

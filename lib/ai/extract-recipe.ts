@@ -83,6 +83,9 @@ function parseRecipeJson(raw: string): ExtractedRecipe {
   const description =
     typeof parsed.description === "string" ? parsed.description.trim() : null;
 
+  const notes =
+    typeof parsed.notes === "string" ? parsed.notes.trim() || null : null;
+
   const servings =
     typeof parsed.servings === "number" && parsed.servings >= 1
       ? Math.floor(parsed.servings)
@@ -111,14 +114,16 @@ function parseRecipeJson(raw: string): ExtractedRecipe {
   const instructions = Array.isArray(parsed.instructions)
     ? parsed.instructions
         .map((i: unknown) => {
-          if (typeof i === "string") return { text: i.trim() };
+          if (typeof i === "string") return { text: i.trim(), note: null };
           if (typeof i === "object" && i !== null) {
             const obj = i as Record<string, unknown>;
             const text =
               obj.text ?? obj.instruction ?? obj.step ?? obj.description;
-            if (typeof text === "string") return { text: text.trim() };
+            const note =
+              typeof obj.note === "string" ? obj.note.trim() || null : null;
+            if (typeof text === "string") return { text: text.trim(), note };
           }
-          return { text: "" };
+          return { text: "", note: null };
         })
         .filter((i: { text: string }) => i.text.length > 0)
     : [];
@@ -127,7 +132,7 @@ function parseRecipeJson(raw: string): ExtractedRecipe {
     throw new Error("AI could not extract any instructions.");
   }
 
-  return { title, description, servings, ingredients, instructions };
+  return { title, description, notes, servings, ingredients, instructions };
 }
 
 export async function extractRecipeFromFile(

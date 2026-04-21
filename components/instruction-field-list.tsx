@@ -10,10 +10,15 @@ interface IngredientOption {
   unit: string;
 }
 
+interface InstructionRow {
+  text: string;
+  note: string;
+}
+
 interface InstructionFieldListProps {
-  instructions: string[];
+  instructions: InstructionRow[];
   ingredients: IngredientOption[];
-  onChange: (instructions: string[]) => void;
+  onChange: (instructions: InstructionRow[]) => void;
 }
 
 export function InstructionFieldList({
@@ -21,15 +26,15 @@ export function InstructionFieldList({
   ingredients,
   onChange,
 }: InstructionFieldListProps) {
-  function updateRow(index: number, value: string) {
-    const updated = instructions.map((text, i) =>
-      i === index ? value : text,
+  function updateRow(index: number, field: keyof InstructionRow, value: string) {
+    const updated = instructions.map((row, i) =>
+      i === index ? { ...row, [field]: value } : row,
     );
     onChange(updated);
   }
 
   function addRow() {
-    onChange([...instructions, ""]);
+    onChange([...instructions, { text: "", note: "" }]);
   }
 
   function removeRow(index: number) {
@@ -38,13 +43,15 @@ export function InstructionFieldList({
 
   return (
     <div className="mt-4 space-y-6">
-      {instructions.map((text, index) => (
-        <InstructionRow
+      {instructions.map((row, index) => (
+        <InstructionRowComponent
           key={index}
           index={index}
-          text={text}
+          text={row.text}
+          note={row.note}
           ingredients={ingredients}
-          onChange={(value) => updateRow(index, value)}
+          onChangeText={(value) => updateRow(index, "text", value)}
+          onChangeNote={(value) => updateRow(index, "note", value)}
           onRemove={instructions.length > 1 ? () => removeRow(index) : undefined}
         />
       ))}
@@ -59,20 +66,25 @@ export function InstructionFieldList({
   );
 }
 
-function InstructionRow({
+function InstructionRowComponent({
   index,
   text,
+  note,
   ingredients,
-  onChange,
+  onChangeText,
+  onChangeNote,
   onRemove,
 }: {
   index: number;
   text: string;
+  note: string;
   ingredients: IngredientOption[];
-  onChange: (value: string) => void;
+  onChangeText: (value: string) => void;
+  onChangeNote: (value: string) => void;
   onRemove?: () => void;
 }) {
   const [showPicker, setShowPicker] = useState(false);
+  const [showNote, setShowNote] = useState(note.length > 0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   function insertTag(name: string, unit: string, quantity: string) {
@@ -83,7 +95,7 @@ function InstructionRow({
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
     const newText = text.slice(0, start) + tag + text.slice(end);
-    onChange(newText);
+    onChangeText(newText);
     setShowPicker(false);
 
     requestAnimationFrame(() => {
@@ -106,7 +118,7 @@ function InstructionRow({
           name="instruction-text"
           placeholder={`Step ${index + 1}`}
           value={text}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChangeText(e.target.value)}
           required
           minRows={2}
           className="w-full flex-1 resize-none rounded-md border border-border bg-input px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -123,14 +135,25 @@ function InstructionRow({
         )}
       </div>
       <div className="relative mt-2 ml-10">
-        <button
-          type="button"
-          onClick={() => setShowPicker(!showPicker)}
-          disabled={namedIngredients.length === 0}
-          className="rounded-md px-2.5 py-1 text-xs text-muted transition-colors hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          + Insert Ingredient
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setShowPicker(!showPicker)}
+            disabled={namedIngredients.length === 0}
+            className="rounded-md px-2.5 py-1 text-xs text-muted transition-colors hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            + Insert Ingredient
+          </button>
+          {!showNote && (
+            <button
+              type="button"
+              onClick={() => setShowNote(true)}
+              className="rounded-md px-2.5 py-1 text-xs text-muted transition-colors hover:text-foreground"
+            >
+              + Add Note
+            </button>
+          )}
+        </div>
         {showPicker && (
           <IngredientPicker
             ingredients={namedIngredients}
@@ -139,6 +162,21 @@ function InstructionRow({
           />
         )}
       </div>
+      {showNote && (
+        <div className="mt-3 ml-10 border-l-2 border-secondary/30 pl-3">
+          <label className="block text-xs font-medium text-muted">Note</label>
+          <TextareaAutosize
+            name="instruction-note"
+            placeholder="Tip or note for this step..."
+            value={note}
+            onChange={(e) => onChangeNote(e.target.value)}
+            minRows={1}
+            className="mt-1 w-full resize-none rounded-md border border-border bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          />
+        </div>
+      )}
+      {/* Hidden input to ensure note is always submitted for each step */}
+      {!showNote && <input type="hidden" name="instruction-note" value="" />}
     </div>
   );
 }

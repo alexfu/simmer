@@ -14,6 +14,7 @@ export async function exportRecipes(): Promise<string> {
   const data = recipes.map((recipe) => ({
     title: recipe.title,
     description: recipe.description,
+    notes: recipe.notes,
     servings: recipe.servings,
     imageUrl: recipe.imageUrl,
     ingredients: recipe.ingredients.map((i) => ({
@@ -24,6 +25,7 @@ export async function exportRecipes(): Promise<string> {
     instructions: recipe.instructions.map((i) => ({
       step: i.step,
       text: i.text,
+      note: i.note,
     })),
   }));
 
