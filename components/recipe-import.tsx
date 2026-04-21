@@ -184,7 +184,7 @@ function FileUpload({
         disabled={isPending || !fileName}
         className="mt-6 w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
       >
-        {isPending ? "Extracting recipe..." : "Extract Recipe"}
+        {isPending ? "Importing..." : "Import"}
       </button>
     </form>
   );
@@ -215,7 +215,7 @@ function TextInput({
         disabled={isPending || !text.trim()}
         className="mt-6 w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
       >
-        {isPending ? "Extracting recipe..." : "Extract Recipe"}
+        {isPending ? "Importing..." : "Import"}
       </button>
     </form>
   );
