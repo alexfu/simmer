@@ -23,7 +23,7 @@ Rules:
 - Whole numbers should be plain strings (e.g. "2", "8")
 - Mixed numbers should use addition (e.g. "1+1/2" for one and a half)
 - If servings are not mentioned, default to 4
-- Each instruction should be a meaningful step — a single-word action like "Drain." can be appended to the previous step, but do not combine multiple distinct actions into one step
+- Each instruction should be a meaningful step — sentences that elaborate on, clarify, or provide detail about the same action should be kept together as one step (e.g. "Add broth and all ingredients except cheese and pasta. Add pasta last and ensure it's submerged. I initially added 4 cups then added 2 more to cover." is one step). Only create a new step when the cook moves on to a genuinely different action.
 - Preserve all information from the original text — do not remove tips, notes, or optional steps
 - Use common abbreviations for units (tbsp, tsp, oz, lb, g, ml, cups)
 - If a quantity is "to taste" or not specified, use 1 with unit "to taste"
