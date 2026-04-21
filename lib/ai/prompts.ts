@@ -26,6 +26,7 @@ Rules:
 - Each instruction should be a meaningful step — sentences that elaborate on, clarify, or provide detail about the same action should be kept together as one step (e.g. "Add broth and all ingredients except cheese and pasta. Add pasta last and ensure it's submerged. I initially added 4 cups then added 2 more to cover." is one step). Only create a new step when the cook moves on to a genuinely different action.
 - Preserve all information from the original text — do not remove tips, notes, or optional steps
 - Use common abbreviations for units (tbsp, tsp, oz, lb, g, ml, cups)
+- If a quantity is a range (e.g. "6-8", "2 to 3"), use the higher value (e.g. "8", "3")
 - If a quantity is "to taste" or not specified, use 1 with unit "to taste"
 - Remove sub-recipe references that are not actual ingredients (e.g. "White Sauce (right)" or "see below" references). The sub-recipe's own ingredients should already be listed individually.
 - Do NOT extract notes, tips, or cooking advice as ingredients (e.g. "Needs heat- add more jalapeno" is advice, not an ingredient)

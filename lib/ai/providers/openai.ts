@@ -28,6 +28,7 @@ function buildFileContent(base64Data: string, mimeType: string) {
   if (mimeType === "application/pdf") {
     return {
       type: "input_file" as const,
+      filename: "recipe.pdf",
       file_data: `data:application/pdf;base64,${base64Data}`,
     };
   }
