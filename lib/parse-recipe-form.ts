@@ -54,14 +54,12 @@ export function parseRecipeForm(formData: FormData): {
         errors.push("Each ingredient must have a name.");
         break;
       }
-      const parsed = parseQuantityExpression(ing.quantity);
-      if (parsed === null || parsed <= 0) {
-        errors.push("Each ingredient must have a valid quantity.");
-        break;
-      }
-      if (!ing.unit) {
-        errors.push("Each ingredient must have a unit.");
-        break;
+      if (ing.quantity) {
+        const parsed = parseQuantityExpression(ing.quantity);
+        if (parsed === null || parsed <= 0) {
+          errors.push("Each ingredient must have a valid quantity.");
+          break;
+        }
       }
     }
   }

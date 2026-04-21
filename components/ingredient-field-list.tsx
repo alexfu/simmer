@@ -67,7 +67,6 @@ export function IngredientFieldList({
                     placeholder="e.g. 1/4"
                     className="mt-1 w-full"
                     inputClassName="bg-input"
-                    required
                   />
                 </div>
                 <div className="flex-1">
@@ -80,7 +79,6 @@ export function IngredientFieldList({
                     placeholder="e.g. cups"
                     value={row.unit}
                     onChange={(e) => updateRow(index, "unit", e.target.value)}
-                    required
                     className="mt-1 w-full rounded-md border border-border bg-input px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>

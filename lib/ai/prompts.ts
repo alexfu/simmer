@@ -12,7 +12,7 @@ Return a JSON object with this structure:
   "notes": "string or null - general tips, variations, or notes about the recipe",
   "servings": number (integer, at least 1),
   "ingredients": [
-    { "name": "string", "quantity": "string - use fractions like 2/3 or 1/4 when exact, or whole numbers like 2", "unit": "string" }
+    { "name": "string", "quantity": "string or empty - use fractions like 2/3 or 1/4 when exact, or whole numbers like 2. Leave empty if no quantity specified.", "unit": "string or empty - leave empty if no unit specified" }
   ],
   "instructions": [
     { "text": "string", "note": "string or null - optional tip or note for this specific step" }
@@ -30,10 +30,10 @@ Rules:
 - Inline tips within a step (e.g. "Optional: thicken with cornstarch") should go in that step's "note" field, not in the instruction text
 - Use common abbreviations for units (tbsp, tsp, oz, lb, g, ml, cups)
 - If a quantity is a range (e.g. "6-8", "2 to 3"), use the higher value (e.g. "8", "3")
-- If a quantity is "to taste" or not specified, use 1 with unit "to taste"
+- If a quantity is not specified or is vague (e.g. "to taste", "a splash"), leave quantity and unit as empty strings
 - Remove sub-recipe references that are not actual ingredients (e.g. "White Sauce (right)" or "see below" references). The sub-recipe's own ingredients should already be listed individually.
 - Do NOT extract notes, tips, or cooking advice as ingredients (e.g. "Needs heat- add more jalapeno" is advice, not an ingredient)
-- If the instructions mention ingredients that are not in the ingredient list (e.g. garnishes like cilantro, sour cream), add them to the ingredients list with quantity "1" and unit "to taste"
+- If the instructions mention ingredients that are not in the ingredient list (e.g. garnishes like cilantro, sour cream), add them to the ingredients list with empty quantity and unit
 - Keep instructions as plain text — do not add any special formatting or tags
 - Return ONLY the JSON object, no markdown formatting or code blocks`;
 

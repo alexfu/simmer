@@ -41,6 +41,10 @@ export function QuantityInput({
 
   function handleChange(newValue: string) {
     setDisplay(newValue);
+    if (newValue.trim() === "") {
+      onChange("");
+      return;
+    }
     const num = parseFloat(newValue);
     if (!isNaN(num) && String(num) === newValue.trim()) {
       onChange(newValue);

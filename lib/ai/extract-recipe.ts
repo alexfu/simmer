@@ -101,8 +101,8 @@ function parseRecipeJson(raw: string): ExtractedRecipe {
         )
         .map((i: Record<string, unknown>) => ({
           name: String(i.name ?? i.ingredient ?? "").trim(),
-          quantity: String(i.quantity ?? i.amount ?? i.qty ?? "1").trim() || "1",
-          unit: String(i.unit ?? i.measurement ?? "whole").trim() || "whole",
+          quantity: String(i.quantity ?? i.amount ?? i.qty ?? "").trim(),
+          unit: String(i.unit ?? i.measurement ?? "").trim(),
         }))
         .filter((i: { name: string }) => i.name.length > 0)
     : [];

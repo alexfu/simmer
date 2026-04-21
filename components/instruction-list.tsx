@@ -82,13 +82,13 @@ function InstructionSegmentView({
   const ingredient = ingredients.find(
     (ing) => ing.name.toLowerCase() === segment.name.toLowerCase(),
   );
-  const quantity = ingredient?.quantity ?? "1";
+  const quantity = ingredient?.quantity ? formatQuantity(ingredient.quantity, scale) : "";
   const unit = ingredient?.unit ?? "";
-  const scaled = formatQuantity(quantity, scale);
+  const display = [quantity, unit, segment.name].filter(Boolean).join(" ");
 
   return (
     <span className="inline-flex items-baseline gap-1 rounded bg-secondary/10 px-1.5 py-0.5 text-sm font-medium text-secondary">
-      {scaled} {unit} {segment.name}
+      {display}
     </span>
   );
 }
