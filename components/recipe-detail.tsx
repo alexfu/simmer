@@ -82,7 +82,11 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
         <h2 className="font-serif text-xl font-semibold text-foreground">
           Instructions
         </h2>
-        <InstructionList instructions={recipe.instructions} />
+        <InstructionList
+          instructions={recipe.instructions}
+          ingredients={recipe.ingredients}
+          scale={scale}
+        />
       </section>
     </article>
   );

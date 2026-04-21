@@ -122,6 +122,7 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
         </h2>
         <InstructionFieldList
           instructions={instructions}
+          ingredients={ingredients.map((i) => ({ name: i.name, unit: i.unit }))}
           onChange={setInstructions}
         />
       </section>
