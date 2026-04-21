@@ -1,5 +1,6 @@
 import { getSettings } from "@/lib/settings";
 import { SettingsForm } from "@/components/settings-form";
+import { ImportExport } from "@/components/import-export";
 
 export default async function SettingsPage() {
   const settings = await getSettings();
@@ -18,6 +19,9 @@ export default async function SettingsPage() {
         Settings
       </h1>
       <SettingsForm initialData={initialData} />
+      <div className="mt-8">
+        <ImportExport />
+      </div>
     </main>
   );
 }
