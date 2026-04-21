@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 import { IngredientFieldList } from "@/components/ingredient-field-list";
 import { InstructionFieldList } from "@/components/instruction-field-list";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { parseInstructionTags } from "@/lib/parse-instruction-tags";
 
 interface FormState {
   errors: string[];
@@ -61,6 +62,21 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
   );
 
   const [recipeNotes, setRecipeNotes] = useState(initialData?.notes ?? "");
+
+  const unreferencedIngredients = useMemo(() => {
+    const referencedNames = new Set<string>();
+    for (const inst of instructions) {
+      const segments = parseInstructionTags(inst.text);
+      for (const seg of segments) {
+        if (seg.type === "ingredient") {
+          referencedNames.add(seg.name.toLowerCase());
+        }
+      }
+    }
+    return ingredients
+      .filter((i) => i.name.trim().length > 0)
+      .filter((i) => !referencedNames.has(i.name.toLowerCase()));
+  }, [ingredients, instructions]);
 
   return (
     <form action={formAction} className="mt-8 space-y-8">
@@ -138,6 +154,37 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
           onChange={setInstructions}
         />
       </section>
+
+      {unreferencedIngredients.length > 0 && (
+        <div className="flex gap-3 rounded-lg bg-secondary/10 px-4 py-3">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="mt-0.5 shrink-0 text-secondary"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>
+          <div>
+            <p className="text-sm font-medium text-foreground">
+              Some ingredients aren&apos;t referenced in instructions
+            </p>
+            <ul className="mt-2 list-disc space-y-0.5 pl-4 text-sm text-foreground">
+              {unreferencedIngredients.map((ing, i) => (
+                <li key={i}>{ing.name}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       <section>
         <h2 className="font-serif text-xl font-semibold text-foreground">
