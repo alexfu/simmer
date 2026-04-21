@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getSettings } from "@/lib/settings";
 import { SettingsForm } from "@/components/settings-form";
 import { ImportExport } from "@/components/import-export";
