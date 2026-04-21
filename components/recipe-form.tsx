@@ -134,7 +134,7 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
         </h2>
         <InstructionFieldList
           instructions={instructions}
-          ingredients={ingredients.map((i) => ({ name: i.name, unit: i.unit }))}
+          ingredients={ingredients.map((i) => ({ name: i.name, unit: i.unit, quantity: i.quantity }))}
           onChange={setInstructions}
         />
       </section>

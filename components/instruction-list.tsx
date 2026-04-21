@@ -82,8 +82,9 @@ function InstructionSegmentView({
   const ingredient = ingredients.find(
     (ing) => ing.name.toLowerCase() === segment.name.toLowerCase(),
   );
+  const quantity = ingredient?.quantity ?? "1";
   const unit = ingredient?.unit ?? "";
-  const scaled = formatQuantity(segment.quantity, scale);
+  const scaled = formatQuantity(quantity, scale);
 
   return (
     <span className="inline-flex items-baseline gap-1 rounded bg-secondary/10 px-1.5 py-0.5 text-sm font-medium text-secondary">

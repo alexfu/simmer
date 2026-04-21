@@ -1,8 +1,8 @@
 export type InstructionSegment =
   | { type: "text"; value: string }
-  | { type: "ingredient"; name: string; quantity: string };
+  | { type: "ingredient"; name: string };
 
-const TAG_PATTERN = /\{\{([^|]+)\|([^}]+)\}\}/g;
+const TAG_PATTERN = /\{\{([^}]+)\}\}/g;
 
 export function parseInstructionTags(text: string): InstructionSegment[] {
   const segments: InstructionSegment[] = [];
@@ -18,7 +18,6 @@ export function parseInstructionTags(text: string): InstructionSegment[] {
     segments.push({
       type: "ingredient",
       name: match[1].trim(),
-      quantity: match[2].trim(),
     });
 
     lastIndex = matchIndex + match[0].length;
@@ -31,6 +30,6 @@ export function parseInstructionTags(text: string): InstructionSegment[] {
   return segments;
 }
 
-export function buildIngredientTag(name: string, quantity: string): string {
-  return `{{${name}|${quantity}}}`;
+export function buildIngredientTag(name: string): string {
+  return `{{${name}}}`;
 }

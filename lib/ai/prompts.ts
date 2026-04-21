@@ -67,37 +67,34 @@ Other rules:
 
 export const TAGGING_PROMPT = `You are given a structured recipe as JSON with an ingredients array and an instructions array. Your task is to add ingredient reference tags to the instruction text.
 
-When an instruction mentions a specific amount of an ingredient, replace the ENTIRE phrase (number + unit + ingredient name + any surrounding words like "of the") with a tag: {{ingredient name|quantity}}
+When an instruction mentions a specific ingredient by name (with or without a quantity), replace the ENTIRE phrase (any quantity + unit + ingredient name + surrounding words like "of the") with a tag: {{ingredient name}}
+
+The tag contains ONLY the ingredient name — no quantity, no unit. The quantity and unit are stored in the ingredients array and will be displayed automatically.
 
 The tag should read naturally in the sentence. Do NOT leave redundant words around the tag.
 
 Rules:
 - The ingredient name inside the tag MUST exactly match a name in the ingredients array
-- The quantity in the tag should use fraction notation (e.g. "2/3", "1/4") or whole numbers — NOT decimals
 - Tag ALL ingredient references that mention a specific quantity, including when the full amount is used in one step
 - If an instruction mentions an ingredient without a specific amount (e.g. "season to taste"), do NOT add a tag
-- Do NOT tag quantities in explanatory or personal notes that describe how something was done rather than directing the cook (e.g. "I initially added 4 cups broth then added 2 more" is explaining technique, not a separate use of the ingredient)
+- Do NOT tag quantities in explanatory or personal notes that describe how something was done rather than directing the cook
 - Do not modify the ingredients array — only modify instruction text
 - Return the complete recipe JSON with updated instructions
 - Return ONLY the JSON object, no markdown formatting or code blocks
 
 CORRECT examples:
   ingredient: { "name": "olive oil", "quantity": "2", "unit": "tbsp" }
-  instruction: "Heat {{olive oil|2}} in a pan"
+  instruction: "Heat {{olive oil}} in a pan"
 
   ingredient: { "name": "parmesan cheese (filling)", "quantity": "2/3", "unit": "cups" }
-  instruction: "Stir {{parmesan cheese (filling)|2/3}} and the egg into the meat mixture"
-  (NOT: "Stir {{parmesan cheese (filling)|2/3}} of the cheese and the egg..." — redundant)
+  instruction: "Stir {{parmesan cheese (filling)}} and the egg into the meat mixture"
 
   ingredient: { "name": "milk", "quantity": "2", "unit": "cups" }
-  instruction: "Stir in {{milk|2}}"
-  (Full amount used in one step — still tagged)
+  instruction: "Stir in {{milk}}"
 
-WRONG - redundant words around tag:
-  "Stir {{parmesan cheese (filling)|2/3}} of the cheese into the mixture"
+WRONG - quantity or unit outside tag:
+  "Heat 2 tbsp {{olive oil}} in a pan"
+  "Stir in 2 cups {{milk}}"
 
-WRONG - quantity/unit outside tag:
-  "Heat 2 tbsp {{olive oil|2}} in a pan"
-
-WRONG - no tag when amount is mentioned:
-  "Stir in 2 cups milk"`;
+WRONG - quantity inside tag:
+  "Heat {{olive oil|2}} in a pan"`;
