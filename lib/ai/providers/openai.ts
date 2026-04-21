@@ -1,29 +1,51 @@
-import { EXTRACTION_PROMPT } from "@/lib/ai/prompt";
+function extractOutputText(json: Record<string, unknown>): string {
+  // Try output_text helper first (may exist on some responses)
+  if (typeof json.output_text === "string") {
+    return json.output_text;
+  }
+
+  // Parse output array: find the first message with text content
+  const output = json.output as Array<Record<string, unknown>> | undefined;
+  if (Array.isArray(output)) {
+    for (const item of output) {
+      if (item.type === "message") {
+        const content = item.content as Array<Record<string, unknown>> | undefined;
+        if (Array.isArray(content)) {
+          for (const part of content) {
+            if (part.type === "output_text" && typeof part.text === "string") {
+              return part.text;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  throw new Error("Could not extract text from OpenAI response");
+}
 
 function buildFileContent(base64Data: string, mimeType: string) {
   if (mimeType === "application/pdf") {
     return {
-      type: "file" as const,
-      file: {
-        filename: "recipe.pdf",
-        file_data: `data:application/pdf;base64,${base64Data}`,
-      },
+      type: "input_file" as const,
+      file_data: `data:application/pdf;base64,${base64Data}`,
     };
   }
 
   return {
-    type: "image_url" as const,
-    image_url: { url: `data:${mimeType};base64,${base64Data}` },
+    type: "input_image" as const,
+    image_url: `data:${mimeType};base64,${base64Data}`,
   };
 }
 
-export async function extractWithOpenAI(
+export async function openaiVision(
   apiKey: string,
   model: string,
+  prompt: string,
   base64Data: string,
   mimeType: string,
 ): Promise<string> {
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,16 +53,15 @@ export async function extractWithOpenAI(
     },
     body: JSON.stringify({
       model,
-      messages: [
+      input: [
         {
           role: "user",
           content: [
-            { type: "text", text: EXTRACTION_PROMPT },
+            { type: "input_text", text: prompt },
             buildFileContent(base64Data, mimeType),
           ],
         },
       ],
-      max_completion_tokens: 4096,
     }),
   });
 
@@ -50,15 +71,15 @@ export async function extractWithOpenAI(
   }
 
   const json = await response.json();
-  return json.choices[0].message.content;
+  return extractOutputText(json);
 }
 
-export async function extractWithOpenAIText(
+export async function openaiText(
   apiKey: string,
   model: string,
-  text: string,
+  prompt: string,
 ): Promise<string> {
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -66,13 +87,7 @@ export async function extractWithOpenAIText(
     },
     body: JSON.stringify({
       model,
-      messages: [
-        {
-          role: "user",
-          content: `${EXTRACTION_PROMPT}\n\nRecipe text:\n${text}`,
-        },
-      ],
-      max_completion_tokens: 4096,
+      input: prompt,
     }),
   });
 
@@ -82,5 +97,5 @@ export async function extractWithOpenAIText(
   }
 
   const json = await response.json();
-  return json.choices[0].message.content;
+  return extractOutputText(json);
 }
