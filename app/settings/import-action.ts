@@ -12,7 +12,7 @@ interface RecipeData {
   description?: string | null;
   servings?: number;
   imageUrl?: string | null;
-  ingredients: { name: string; quantity: number; unit: string }[];
+  ingredients: { name: string; quantity: string | number; unit: string }[];
   instructions: { step?: number; text: string }[];
 }
 
@@ -51,7 +51,7 @@ export async function importRecipes(json: string): Promise<ImportResult> {
             .filter((i) => i.name && i.quantity != null && i.unit)
             .map((i) => ({
               name: i.name,
-              quantity: i.quantity,
+              quantity: String(i.quantity),
               unit: i.unit,
             })),
         },

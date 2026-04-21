@@ -20,7 +20,7 @@ interface RecipeFormProps {
     title: string;
     description: string | null;
     servings: number;
-    ingredients: { name: string; quantity: number; unit: string }[];
+    ingredients: { name: string; quantity: string; unit: string }[];
     instructions: { text: string }[];
   };
 }
@@ -38,7 +38,7 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
     initialData
       ? initialData.ingredients.map((i) => ({
           name: i.name,
-          quantity: i.quantity.toString(),
+          quantity: i.quantity,
           unit: i.unit,
         }))
       : [{ name: "", quantity: "", unit: "" }],

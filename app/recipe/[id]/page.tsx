@@ -30,7 +30,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
     ingredients: recipe.ingredients.map((i) => ({
       id: i.id,
       name: i.name,
-      quantity: i.quantity.toNumber(),
+      quantity: i.quantity,
       unit: i.unit,
     })),
     instructions: recipe.instructions.map((i) => ({

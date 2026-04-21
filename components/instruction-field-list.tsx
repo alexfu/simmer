@@ -75,7 +75,7 @@ function InstructionRow({
   const [showPicker, setShowPicker] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  function insertTag(name: string, unit: string, quantity: number) {
+  function insertTag(name: string, unit: string, quantity: string) {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
@@ -149,7 +149,7 @@ function IngredientPicker({
   onClose,
 }: {
   ingredients: IngredientOption[];
-  onInsert: (name: string, unit: string, quantity: number) => void;
+  onInsert: (name: string, unit: string, quantity: string) => void;
   onClose: () => void;
 }) {
   const [selected, setSelected] = useState<IngredientOption | null>(null);
@@ -222,9 +222,9 @@ function IngredientPicker({
               </button>
               <button
                 type="button"
-                disabled={!quantity || parseFloat(quantity) <= 0}
+                disabled={!quantity}
                 onClick={() =>
-                  onInsert(selected.name, selected.unit, parseFloat(quantity))
+                  onInsert(selected.name, selected.unit, quantity)
                 }
                 className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-40 sm:flex-none sm:py-2 sm:px-6"
               >

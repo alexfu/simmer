@@ -1,8 +1,10 @@
+import { parseQuantityExpression } from "@/lib/parse-quantity";
+
 export interface ParsedRecipeData {
   title: string;
   description: string | null;
   servings: number;
-  ingredients: { name: string; quantity: number; unit: string }[];
+  ingredients: { name: string; quantity: string; unit: string }[];
   instructions: string[];
 }
 
@@ -19,7 +21,7 @@ export function parseRecipeForm(formData: FormData): {
       : 0;
 
   const names = formData.getAll("ingredient-name").map((v) => v.toString().trim());
-  const quantities = formData.getAll("ingredient-quantity").map((v) => v.toString());
+  const quantities = formData.getAll("ingredient-quantity").map((v) => v.toString().trim());
   const units = formData.getAll("ingredient-unit").map((v) => v.toString().trim());
   const instructionTexts = formData.getAll("instruction-text").map((v) => v.toString().trim());
 
@@ -36,10 +38,10 @@ export function parseRecipeForm(formData: FormData): {
   const ingredients = names
     .map((name, i) => ({
       name,
-      quantity: parseFloat(quantities[i]),
+      quantity: quantities[i],
       unit: units[i],
     }))
-    .filter((ing) => ing.name || !isNaN(ing.quantity) || ing.unit);
+    .filter((ing) => ing.name || ing.quantity || ing.unit);
 
   if (ingredients.length === 0) {
     errors.push("At least one ingredient is required.");
@@ -49,7 +51,8 @@ export function parseRecipeForm(formData: FormData): {
         errors.push("Each ingredient must have a name.");
         break;
       }
-      if (isNaN(ing.quantity) || ing.quantity <= 0) {
+      const parsed = parseQuantityExpression(ing.quantity);
+      if (parsed === null || parsed <= 0) {
         errors.push("Each ingredient must have a valid quantity.");
         break;
       }

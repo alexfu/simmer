@@ -28,7 +28,7 @@ export default async function EditRecipePage({ params }: EditRecipePageProps) {
     servings: recipe.servings,
     ingredients: recipe.ingredients.map((i) => ({
       name: i.name,
-      quantity: i.quantity.toNumber(),
+      quantity: i.quantity,
       unit: i.unit,
     })),
     instructions: recipe.instructions.map((i) => ({

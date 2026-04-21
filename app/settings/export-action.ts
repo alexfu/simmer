@@ -18,7 +18,7 @@ export async function exportRecipes(): Promise<string> {
     imageUrl: recipe.imageUrl,
     ingredients: recipe.ingredients.map((i) => ({
       name: i.name,
-      quantity: i.quantity.toNumber(),
+      quantity: i.quantity,
       unit: i.unit,
     })),
     instructions: recipe.instructions.map((i) => ({
