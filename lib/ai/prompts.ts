@@ -41,7 +41,7 @@ export const SPLIT_PROMPT = `You are given a structured recipe as JSON. Your tas
 
 Rules for splitting:
 - ONLY split when the recipe specifies distinct, measurable quantities for different uses (e.g. "2/3 cup for filling" and "2 tbsp for topping")
-- Do NOT split when the recipe says vague things like "keep a little bit separate", "reserve some for topping", or "a little bit of". These are not specific quantities — keep the ingredient as a single entry
+- Do NOT split when the recipe says vague things like "keep a little bit separate", "reserve some for topping", "a little bit of", "a splash of", or "a pinch of". These are not specific quantities — keep the ingredient as a single entry
 - Do NOT split when the same ingredient is used from the same batch in the same cooking process (e.g. cook 1 lb bacon, then use some in the mix and some on top — this is still 1 lb bacon total)
 - Do NOT invent quantities. If the original recipe doesn't specify an amount, do not create one
 - If an ingredient's full amount is used in a single step, leave it as-is
