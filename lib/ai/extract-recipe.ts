@@ -1,8 +1,14 @@
 import type { Settings } from "@/app/generated/prisma/client";
 import type { ExtractedRecipe } from "@/lib/ai/types";
-import { extractWithOpenAI, extractWithOpenAIText } from "@/lib/ai/providers/openai";
-import { extractWithGemini, extractWithGeminiText } from "@/lib/ai/providers/gemini";
-import { extractWithAnthropic, extractWithAnthropicText } from "@/lib/ai/providers/anthropic";
+import {
+  OCR_PROMPT,
+  STRUCTURE_PROMPT,
+  SPLIT_PROMPT,
+  TAGGING_PROMPT,
+} from "@/lib/ai/prompts";
+import { openaiVision, openaiText } from "@/lib/ai/providers/openai";
+import { geminiVision, geminiText } from "@/lib/ai/providers/gemini";
+import { anthropicVision, anthropicText } from "@/lib/ai/providers/anthropic";
 
 function getApiKey(settings: Settings): string {
   const keyMap: Record<string, string | null> = {
@@ -20,9 +26,50 @@ function getApiKey(settings: Settings): string {
   return key;
 }
 
-function parseResponse(raw: string): ExtractedRecipe {
-  const cleaned = raw.replace(/```(?:json)?\n?|\n?```/g, "").trim();
-  const parsed = JSON.parse(cleaned);
+function callVision(
+  provider: string,
+  apiKey: string,
+  model: string,
+  prompt: string,
+  base64: string,
+  mimeType: string,
+): Promise<string> {
+  switch (provider) {
+    case "openai":
+      return openaiVision(apiKey, model, prompt, base64, mimeType);
+    case "gemini":
+      return geminiVision(apiKey, model, prompt, base64, mimeType);
+    case "anthropic":
+      return anthropicVision(apiKey, model, prompt, base64, mimeType);
+    default:
+      throw new Error(`Unknown provider: ${provider}`);
+  }
+}
+
+function callText(
+  provider: string,
+  apiKey: string,
+  model: string,
+  prompt: string,
+): Promise<string> {
+  switch (provider) {
+    case "openai":
+      return openaiText(apiKey, model, prompt);
+    case "gemini":
+      return geminiText(apiKey, model, prompt);
+    case "anthropic":
+      return anthropicText(apiKey, model, prompt);
+    default:
+      throw new Error(`Unknown provider: ${provider}`);
+  }
+}
+
+function cleanJson(raw: string): string {
+  return raw.replace(/```(?:json)?\n?|\n?```/g, "").trim();
+}
+
+function parseRecipeJson(raw: string): ExtractedRecipe {
+  const parsed = JSON.parse(cleanJson(raw));
 
   const title = typeof parsed.title === "string" ? parsed.title.trim() : "";
   if (!title) {
@@ -41,11 +88,13 @@ function parseResponse(raw: string): ExtractedRecipe {
     ? parsed.ingredients
         .filter(
           (i: unknown) =>
-            typeof i === "object" && i !== null && ("name" in i || "ingredient" in i),
+            typeof i === "object" &&
+            i !== null &&
+            ("name" in i || "ingredient" in i),
         )
         .map((i: Record<string, unknown>) => ({
           name: String(i.name ?? i.ingredient ?? "").trim(),
-          quantity: Number(i.quantity ?? i.amount ?? i.qty ?? 1) || 1,
+          quantity: String(i.quantity ?? i.amount ?? i.qty ?? "1").trim() || "1",
           unit: String(i.unit ?? i.measurement ?? "whole").trim() || "whole",
         }))
         .filter((i: { name: string }) => i.name.length > 0)
@@ -61,7 +110,8 @@ function parseResponse(raw: string): ExtractedRecipe {
           if (typeof i === "string") return { text: i.trim() };
           if (typeof i === "object" && i !== null) {
             const obj = i as Record<string, unknown>;
-            const text = obj.text ?? obj.instruction ?? obj.step ?? obj.description;
+            const text =
+              obj.text ?? obj.instruction ?? obj.step ?? obj.description;
             if (typeof text === "string") return { text: text.trim() };
           }
           return { text: "" };
@@ -76,53 +126,75 @@ function parseResponse(raw: string): ExtractedRecipe {
   return { title, description, servings, ingredients, instructions };
 }
 
+/**
+ * Extract recipe from an image or PDF.
+ * Phase 1: OCR — extract raw text
+ * Phase 2: Structure — parse into recipe JSON
+ * Phase 3: Split — split shared ingredients
+ * Phase 4: Tagging — add ingredient reference tags to instructions
+ */
 export async function extractRecipeFromFile(
   file: { base64: string; mimeType: string },
   settings: Settings,
 ): Promise<ExtractedRecipe> {
   const apiKey = getApiKey(settings);
-
   const model = settings.activeModel;
+  const provider = settings.activeProvider;
 
-  let raw: string;
-  switch (settings.activeProvider) {
-    case "openai":
-      raw = await extractWithOpenAI(apiKey, model, file.base64, file.mimeType);
-      break;
-    case "gemini":
-      raw = await extractWithGemini(apiKey, model, file.base64, file.mimeType);
-      break;
-    case "anthropic":
-      raw = await extractWithAnthropic(apiKey, model, file.base64, file.mimeType);
-      break;
-    default:
-      throw new Error(`Unknown provider: ${settings.activeProvider}`);
-  }
+  // Phase 1: OCR
+  const rawText = await callVision(
+    provider,
+    apiKey,
+    model,
+    OCR_PROMPT,
+    file.base64,
+    file.mimeType,
+  );
 
-  return parseResponse(raw);
+  // Phase 2: Structure
+  const structurePrompt = `${STRUCTURE_PROMPT}\n\nRecipe text:\n${rawText}`;
+  const structuredRaw = await callText(provider, apiKey, model, structurePrompt);
+  const structured = parseRecipeJson(structuredRaw);
+
+  // Phase 3: Split
+  const splitPrompt = `${SPLIT_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(structured, null, 2)}`;
+  const splitRaw = await callText(provider, apiKey, model, splitPrompt);
+  const split = parseRecipeJson(splitRaw);
+
+  // Phase 4: Tagging
+  const tagPrompt = `${TAGGING_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(split, null, 2)}`;
+  const taggedRaw = await callText(provider, apiKey, model, tagPrompt);
+
+  return parseRecipeJson(taggedRaw);
 }
 
+/**
+ * Extract recipe from plain text input.
+ * Phase 1: Structure — parse into recipe JSON
+ * Phase 2: Split — split shared ingredients
+ * Phase 3: Tagging — add ingredient reference tags to instructions
+ */
 export async function extractRecipeFromText(
   text: string,
   settings: Settings,
 ): Promise<ExtractedRecipe> {
   const apiKey = getApiKey(settings);
   const model = settings.activeModel;
+  const provider = settings.activeProvider;
 
-  let raw: string;
-  switch (settings.activeProvider) {
-    case "openai":
-      raw = await extractWithOpenAIText(apiKey, model, text);
-      break;
-    case "gemini":
-      raw = await extractWithGeminiText(apiKey, model, text);
-      break;
-    case "anthropic":
-      raw = await extractWithAnthropicText(apiKey, model, text);
-      break;
-    default:
-      throw new Error(`Unknown provider: ${settings.activeProvider}`);
-  }
+  // Phase 1: Structure
+  const structurePrompt = `${STRUCTURE_PROMPT}\n\nRecipe text:\n${text}`;
+  const structuredRaw = await callText(provider, apiKey, model, structurePrompt);
+  const structured = parseRecipeJson(structuredRaw);
 
-  return parseResponse(raw);
+  // Phase 2: Split
+  const splitPrompt = `${SPLIT_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(structured, null, 2)}`;
+  const splitRaw = await callText(provider, apiKey, model, splitPrompt);
+  const split = parseRecipeJson(splitRaw);
+
+  // Phase 3: Tagging
+  const tagPrompt = `${TAGGING_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(split, null, 2)}`;
+  const taggedRaw = await callText(provider, apiKey, model, tagPrompt);
+
+  return parseRecipeJson(taggedRaw);
 }

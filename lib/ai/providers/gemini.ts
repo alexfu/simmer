@@ -1,8 +1,7 @@
-import { EXTRACTION_PROMPT } from "@/lib/ai/prompt";
-
-export async function extractWithGemini(
+export async function geminiVision(
   apiKey: string,
   model: string,
+  prompt: string,
   base64Data: string,
   mimeType: string,
 ): Promise<string> {
@@ -15,7 +14,7 @@ export async function extractWithGemini(
         contents: [
           {
             parts: [
-              { text: EXTRACTION_PROMPT },
+              { text: prompt },
               { inlineData: { mimeType, data: base64Data } },
             ],
           },
@@ -33,10 +32,10 @@ export async function extractWithGemini(
   return json.candidates[0].content.parts[0].text;
 }
 
-export async function extractWithGeminiText(
+export async function geminiText(
   apiKey: string,
   model: string,
-  text: string,
+  prompt: string,
 ): Promise<string> {
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
@@ -46,9 +45,7 @@ export async function extractWithGeminiText(
       body: JSON.stringify({
         contents: [
           {
-            parts: [
-              { text: `${EXTRACTION_PROMPT}\n\nRecipe text:\n${text}` },
-            ],
+            parts: [{ text: prompt }],
           },
         ],
       }),

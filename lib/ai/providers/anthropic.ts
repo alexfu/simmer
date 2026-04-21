@@ -1,37 +1,38 @@
-import { EXTRACTION_PROMPT } from "@/lib/ai/prompt";
-
 type AnthropicMediaType =
   | "image/jpeg"
   | "image/png"
   | "image/gif"
   | "image/webp";
 
-export async function extractWithAnthropic(
+function buildFileContent(base64Data: string, mimeType: string) {
+  if (mimeType === "application/pdf") {
+    return {
+      type: "document" as const,
+      source: {
+        type: "base64" as const,
+        media_type: "application/pdf" as const,
+        data: base64Data,
+      },
+    };
+  }
+
+  return {
+    type: "image" as const,
+    source: {
+      type: "base64" as const,
+      media_type: mimeType as AnthropicMediaType,
+      data: base64Data,
+    },
+  };
+}
+
+export async function anthropicVision(
   apiKey: string,
   model: string,
+  prompt: string,
   base64Data: string,
   mimeType: string,
 ): Promise<string> {
-  const isPdf = mimeType === "application/pdf";
-
-  const fileContent = isPdf
-    ? {
-        type: "document" as const,
-        source: {
-          type: "base64" as const,
-          media_type: "application/pdf" as const,
-          data: base64Data,
-        },
-      }
-    : {
-        type: "image" as const,
-        source: {
-          type: "base64" as const,
-          media_type: mimeType as AnthropicMediaType,
-          data: base64Data,
-        },
-      };
-
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -45,7 +46,10 @@ export async function extractWithAnthropic(
       messages: [
         {
           role: "user",
-          content: [fileContent, { type: "text", text: EXTRACTION_PROMPT }],
+          content: [
+            buildFileContent(base64Data, mimeType),
+            { type: "text", text: prompt },
+          ],
         },
       ],
     }),
@@ -60,10 +64,10 @@ export async function extractWithAnthropic(
   return json.content[0].text;
 }
 
-export async function extractWithAnthropicText(
+export async function anthropicText(
   apiKey: string,
   model: string,
-  text: string,
+  prompt: string,
 ): Promise<string> {
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -78,7 +82,7 @@ export async function extractWithAnthropicText(
       messages: [
         {
           role: "user",
-          content: `${EXTRACTION_PROMPT}\n\nRecipe text:\n${text}`,
+          content: prompt,
         },
       ],
     }),
