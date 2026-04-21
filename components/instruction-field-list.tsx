@@ -109,7 +109,7 @@ function InstructionRow({
           onChange={(e) => onChange(e.target.value)}
           required
           minRows={2}
-          className="w-full flex-1 resize-none rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="w-full flex-1 resize-none rounded-md border border-border bg-input px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
         />
         {onRemove && (
           <button
@@ -205,6 +205,7 @@ function IngredientPicker({
                 onChange={setQuantity}
                 placeholder="e.g. 1/2"
                 className="flex-1"
+                inputClassName="bg-input"
               />
               <span className="text-sm text-muted">{selected.unit}</span>
             </div>

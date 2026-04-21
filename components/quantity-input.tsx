@@ -9,6 +9,7 @@ interface QuantityInputProps {
   value: string;
   placeholder?: string;
   className?: string;
+  inputClassName?: string;
   required?: boolean;
   onChange: (value: string) => void;
 }
@@ -18,6 +19,7 @@ export function QuantityInput({
   value,
   placeholder = "Qty (e.g. 1/4)",
   className = "w-28",
+  inputClassName = "bg-surface",
   required,
   onChange,
 }: QuantityInputProps) {
@@ -65,7 +67,7 @@ export function QuantityInput({
           }
         }}
         required={required}
-        className={`w-full rounded-md border bg-surface px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+        className={`w-full rounded-md border px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 ${inputClassName} ${
           isInvalid && isFocused
             ? "border-primary focus:border-primary"
             : "border-border focus:border-primary"

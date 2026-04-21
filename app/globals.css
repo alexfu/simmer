@@ -9,6 +9,7 @@
   --secondary-hover: #5a6b4f;
   --muted: #a89585;
   --surface: #ffffff;
+  --input: #fbf8f5;
   --border: #e8ddd3;
 }
 
@@ -21,6 +22,7 @@
   --color-secondary-hover: var(--secondary-hover);
   --color-muted: var(--muted);
   --color-surface: var(--surface);
+  --color-input: var(--input);
   --color-border: var(--border);
   --font-sans: var(--font-inter);
   --font-serif: var(--font-lora);

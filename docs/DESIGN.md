@@ -14,6 +14,7 @@ Simmer is a recipe app. Warm, cozy kitchen aesthetic — not sterile or corporat
 | `secondary-hover` | `#5A6B4F` | Secondary hover state                    |
 | `muted`           | `#A89585` | Placeholders, secondary text, borders    |
 | `surface`         | `#FFFFFF` | Card/panel backgrounds                   |
+| `input`           | `#FBF8F5` | Input backgrounds inside cards           |
 | `border`          | `#E8DDD3` | Borders, dividers                        |
 
 ## Typography
@@ -23,11 +24,20 @@ Simmer is a recipe app. Warm, cozy kitchen aesthetic — not sterile or corporat
 - Use `font-serif` for recipe titles, section headers, and display text
 - Use `font-sans` for body text, UI labels, form inputs
 
+## Cards
+
+- Cards use `bg-surface` (white) with `border border-border` and `rounded-xl`
+- Inputs inside cards use `bg-input` — never `bg-surface` (blends with card) or `bg-background` (matches page)
+- Inputs outside cards (standalone forms) use `bg-surface`
+- Color hierarchy: page (`background`) → card (`surface`) → input (`input`) — each layer must be visually distinct
+
 ## Styling Guidelines
 
 - Light mode only
-- Rounded corners: `rounded-lg` (8px) for cards, `rounded-md` (6px) for buttons/inputs
+- Rounded corners: `rounded-xl` (12px) for cards, `rounded-lg` (8px) for large buttons, `rounded-md` (6px) for inputs and small buttons
 - Shadows: use `shadow-sm` with warm tones, not harsh black shadows
 - Generous spacing — relaxed, not cramped
 - Prefer soft borders (`border-border`) over hard lines
 - No pure black (`#000`) or pure white (`#FFF`) in the UI — use the theme tokens
+- All interactive elements must have comfortable touch targets (min 44px height) on mobile
+- Buttons: full-width on mobile (`w-full`), auto-width on desktop (`sm:w-auto`)

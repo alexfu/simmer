@@ -37,7 +37,7 @@ export function IngredientFieldList({
       {ingredients.map((row, index) => (
         <div
           key={index}
-          className="rounded-lg border border-border bg-background p-4"
+          className="rounded-lg border border-border bg-surface p-4"
         >
           <div className="flex items-start justify-between">
             <div className="flex-1 space-y-3">
@@ -52,7 +52,7 @@ export function IngredientFieldList({
                   value={row.name}
                   onChange={(e) => updateRow(index, "name", e.target.value)}
                   required
-                  className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="mt-1 w-full rounded-md border border-border bg-input px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
               </div>
               <div className="flex gap-3">
@@ -66,6 +66,7 @@ export function IngredientFieldList({
                     onChange={(value) => updateRow(index, "quantity", value)}
                     placeholder="e.g. 1/4"
                     className="mt-1 w-full"
+                    inputClassName="bg-input"
                     required
                   />
                 </div>
@@ -80,7 +81,7 @@ export function IngredientFieldList({
                     value={row.unit}
                     onChange={(e) => updateRow(index, "unit", e.target.value)}
                     required
-                    className="mt-1 w-full rounded-md border border-border bg-surface px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="mt-1 w-full rounded-md border border-border bg-input px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
               </div>
