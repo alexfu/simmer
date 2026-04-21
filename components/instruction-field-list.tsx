@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import TextareaAutosize from "react-textarea-autosize";
 import { buildIngredientTag } from "@/lib/parse-instruction-tags";
 import { QuantityInput } from "@/components/quantity-input";
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 interface IngredientOption {
   name: string;
@@ -165,14 +166,14 @@ function InstructionRowComponent({
       {showNote && (
         <div className="mt-3 ml-10 border-l-2 border-secondary/30 pl-3">
           <label className="block text-xs font-medium text-muted">Note</label>
-          <TextareaAutosize
-            name="instruction-note"
-            placeholder="Tip or note for this step..."
-            value={note}
-            onChange={(e) => onChangeNote(e.target.value)}
-            minRows={1}
-            className="mt-1 w-full resize-none rounded-md border border-border bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
-          />
+          <div className="mt-1">
+            <RichTextEditor
+              name="instruction-note"
+              value={note}
+              placeholder="Tip or note for this step..."
+              onChange={onChangeNote}
+            />
+          </div>
         </div>
       )}
       {/* Hidden input to ensure note is always submitted for each step */}

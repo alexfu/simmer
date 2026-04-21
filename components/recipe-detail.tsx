@@ -7,6 +7,7 @@ import { ServingsAdjuster } from "@/components/servings-adjuster";
 import { IngredientList } from "@/components/ingredient-list";
 import { InstructionList } from "@/components/instruction-list";
 import { DeleteRecipeButton } from "@/components/delete-recipe-button";
+import { RichTextDisplay } from "@/components/rich-text-display";
 
 interface RecipeDetailProps {
   recipe: {
@@ -94,26 +95,8 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
           <h2 className="font-serif text-xl font-semibold text-foreground">
             Notes
           </h2>
-          <div className="mt-4 flex gap-3 rounded-lg bg-secondary/10 px-4 py-3">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mt-0.5 shrink-0 text-secondary"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4" />
-              <path d="M12 8h.01" />
-            </svg>
-            <p className="whitespace-pre-line text-sm text-foreground">
-              {recipe.notes}
-            </p>
+          <div className="mt-4">
+            <RichTextDisplay html={recipe.notes} />
           </div>
         </section>
       )}

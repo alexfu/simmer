@@ -33,3 +33,56 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
 }
+
+/* Rich text content styles (display + editor) */
+.rich-text ul,
+.tiptap ul {
+  list-style-type: disc;
+  padding-left: 1.25rem;
+  margin: 0.25rem 0;
+}
+
+.rich-text ol,
+.tiptap ol {
+  list-style-type: decimal;
+  padding-left: 1.25rem;
+  margin: 0.25rem 0;
+}
+
+.rich-text li,
+.tiptap li {
+  margin: 0.125rem 0;
+}
+
+.rich-text a,
+.tiptap a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.rich-text a:hover,
+.tiptap a:hover {
+  color: var(--primary-hover);
+}
+
+.rich-text strong {
+  font-weight: 600;
+}
+
+.rich-text em {
+  font-style: italic;
+}
+
+.rich-text p + p,
+.tiptap p + p {
+  margin-top: 0.5rem;
+}
+
+/* Tiptap editor placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  color: var(--muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}

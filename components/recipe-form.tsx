@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { IngredientFieldList } from "@/components/ingredient-field-list";
 import { InstructionFieldList } from "@/components/instruction-field-list";
+import { RichTextEditor } from "@/components/rich-text-editor";
 
 interface FormState {
   errors: string[];
@@ -58,6 +59,8 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
         }))
       : [{ text: "", note: "" }],
   );
+
+  const [recipeNotes, setRecipeNotes] = useState(initialData?.notes ?? "");
 
   return (
     <form action={formAction} className="mt-8 space-y-8">
@@ -140,13 +143,14 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
         <h2 className="font-serif text-xl font-semibold text-foreground">
           Notes
         </h2>
-        <textarea
-          name="recipe-notes"
-          rows={4}
-          defaultValue={initialData?.notes ?? ""}
-          placeholder="General tips, variations, or notes about this recipe..."
-          className={`mt-4 ${inputClassName}`}
-        />
+        <div className="mt-4">
+          <RichTextEditor
+            name="recipe-notes"
+            value={recipeNotes}
+            placeholder="General tips, variations, or notes about this recipe..."
+            onChange={setRecipeNotes}
+          />
+        </div>
       </section>
 
       <button

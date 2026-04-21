@@ -3,6 +3,7 @@ import {
   type InstructionSegment,
 } from "@/lib/parse-instruction-tags";
 import { formatQuantity } from "@/lib/format-quantity";
+import { RichTextDisplay } from "@/components/rich-text-display";
 
 interface IngredientInfo {
   name: string;
@@ -50,26 +51,11 @@ export function InstructionList({
                 ))}
               </p>
               {instruction.note && (
-                <div className="mt-2 flex gap-2 rounded-lg bg-secondary/10 px-3 py-2.5">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mt-0.5 shrink-0 text-secondary"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M12 16v-4" />
-                    <path d="M12 8h.01" />
-                  </svg>
-                  <p className="text-sm text-foreground">
-                    {instruction.note}
-                  </p>
+                <div className="mt-2 rounded-lg bg-secondary/10 px-3 py-2.5">
+                  <p className="text-xs font-medium text-secondary">Notes</p>
+                  <div className="mt-1">
+                    <RichTextDisplay html={instruction.note} />
+                  </div>
                 </div>
               )}
             </div>
