@@ -156,69 +156,83 @@ function IngredientPicker({
   const [quantity, setQuantity] = useState("");
 
   return (
-    <div className="absolute left-0 top-full z-10 mt-1 w-72 rounded-lg border border-border bg-surface p-3 shadow-md">
-      {!selected ? (
-        <div>
-          <p className="mb-2 text-xs font-medium text-muted">
-            Select an ingredient
-          </p>
-          <div className="max-h-40 space-y-1 overflow-y-auto">
-            {ingredients.map((ing, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => setSelected(ing)}
-                className="w-full rounded-md px-3 py-1.5 text-left text-sm text-foreground transition-colors hover:bg-border"
-              >
-                {ing.name}
-                <span className="ml-1 text-muted">({ing.unit})</span>
-              </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-2 text-xs text-muted hover:text-foreground"
-          >
-            Cancel
-          </button>
-        </div>
-      ) : (
-        <div>
-          <p className="mb-2 text-xs font-medium text-muted">
-            How much {selected.name}?
-          </p>
-          <div className="flex items-center gap-2">
-            <QuantityInput
-              value={quantity}
-              onChange={setQuantity}
-              placeholder="Qty"
-              className="w-20"
-            />
-            <span className="text-sm text-muted">{selected.unit}</span>
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-40 bg-foreground/20"
+        onClick={onClose}
+      />
+
+      {/* Bottom sheet */}
+      <div className="fixed inset-x-0 bottom-0 z-50 rounded-t-2xl border-t border-border bg-surface px-6 pb-8 pt-4 shadow-lg sm:absolute sm:inset-auto sm:bottom-auto sm:left-0 sm:top-full sm:mt-2 sm:w-80 sm:rounded-xl sm:border sm:pb-4 sm:pt-4">
+        {/* Drag handle (mobile only) */}
+        <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border sm:hidden" />
+
+        {!selected ? (
+          <div>
+            <p className="mb-3 text-sm font-medium text-foreground">
+              Select an ingredient
+            </p>
+            <div className="max-h-64 space-y-1 overflow-y-auto sm:max-h-48">
+              {ingredients.map((ing, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setSelected(ing)}
+                  className="w-full rounded-lg px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-background active:bg-background sm:py-2"
+                >
+                  {ing.name}
+                  <span className="ml-2 text-muted">({ing.unit})</span>
+                </button>
+              ))}
+            </div>
             <button
               type="button"
-              disabled={!quantity || parseFloat(quantity) <= 0}
-              onClick={() =>
-                onInsert(selected.name, selected.unit, parseFloat(quantity))
-              }
-              className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-40"
+              onClick={onClose}
+              className="mt-4 w-full rounded-lg border border-border py-3 text-sm font-medium text-muted transition-colors hover:text-foreground sm:w-auto sm:border-0 sm:py-1"
             >
-              Insert
+              Cancel
             </button>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              setSelected(null);
-              setQuantity("");
-            }}
-            className="mt-2 text-xs text-muted hover:text-foreground"
-          >
-            Back
-          </button>
-        </div>
-      )}
-    </div>
+        ) : (
+          <div>
+            <p className="mb-4 text-sm font-medium text-foreground">
+              How much {selected.name}?
+            </p>
+            <div className="flex items-center gap-3">
+              <QuantityInput
+                value={quantity}
+                onChange={setQuantity}
+                placeholder="e.g. 1/2"
+                className="flex-1"
+              />
+              <span className="text-sm text-muted">{selected.unit}</span>
+            </div>
+            <div className="mt-4 flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelected(null);
+                  setQuantity("");
+                }}
+                className="flex-1 rounded-lg border border-border py-3 text-sm font-medium text-muted transition-colors hover:text-foreground sm:flex-none sm:py-2 sm:px-4"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                disabled={!quantity || parseFloat(quantity) <= 0}
+                onClick={() =>
+                  onInsert(selected.name, selected.unit, parseFloat(quantity))
+                }
+                className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-40 sm:flex-none sm:py-2 sm:px-6"
+              >
+                Insert
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
