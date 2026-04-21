@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { InstructionEditor } from "@/components/instruction-editor";
+import { useRef, useState } from "react";
+import { InstructionEditor, IngredientInserter } from "@/components/instruction-editor";
 import { RichTextEditor } from "@/components/rich-text-editor";
 
 interface IngredientOption {
@@ -83,34 +83,45 @@ function InstructionRowComponent({
   onRemove?: () => void;
 }) {
   const [showNote, setShowNote] = useState(note.length > 0);
+  const insertIngredientRef = useRef<((name: string) => void) | null>(null);
+  const namedIngredients = ingredients.filter((i) => i.name.trim().length > 0);
 
   return (
     <div className="rounded-lg border border-border bg-surface p-4">
-      <div className="flex gap-3">
-        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-surface">
-          {index + 1}
-        </span>
-        <div className="flex-1">
-          <InstructionEditor
-            value={text}
-            ingredients={ingredients}
-            placeholder={`Step ${index + 1}`}
-            onChange={onChangeText}
-          />
-          <input type="hidden" name="instruction-text" value={text} />
+      <div className="flex items-start justify-between">
+        <div className="flex flex-1 gap-3">
+          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-medium text-surface">
+            {index + 1}
+          </span>
+          <div className="flex-1">
+            <InstructionEditor
+              value={text}
+              ingredients={ingredients}
+              placeholder={`Step ${index + 1}`}
+              onChange={onChangeText}
+              onEditorReady={(fn) => { insertIngredientRef.current = fn; }}
+            />
+            <input type="hidden" name="instruction-text" value={text} />
+          </div>
         </div>
         {onRemove && (
           <button
             type="button"
             onClick={onRemove}
-            className="mt-0.5 text-sm text-muted transition-colors hover:text-foreground"
+            className="ml-3 text-sm text-muted transition-colors hover:text-foreground"
             aria-label="Remove step"
           >
             &times;
           </button>
         )}
       </div>
-      <div className="mt-2 ml-10">
+      <div className="mt-2 ml-10 flex gap-3">
+        {namedIngredients.length > 0 && (
+          <IngredientInserter
+            ingredients={namedIngredients}
+            onInsert={(name) => insertIngredientRef.current?.(name)}
+          />
+        )}
         {!showNote && (
           <button
             type="button"

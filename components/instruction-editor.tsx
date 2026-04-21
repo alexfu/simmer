@@ -84,6 +84,7 @@ interface InstructionEditorProps {
   ingredients: IngredientOption[];
   placeholder?: string;
   onChange: (value: string) => void;
+  onEditorReady?: (insertIngredient: (name: string) => void) => void;
 }
 
 function tagsToHtml(text: string): string {
@@ -148,6 +149,7 @@ export function InstructionEditor({
   ingredients,
   placeholder,
   onChange,
+  onEditorReady,
 }: InstructionEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -221,26 +223,20 @@ export function InstructionEditor({
 
   if (!editor) return null;
 
-  const namedIngredients = ingredients.filter((i) => i.name.trim().length > 0);
+  if (onEditorReady) {
+    onEditorReady(insertIngredient);
+  }
 
   return (
     <IngredientsContext.Provider value={ingredients}>
-      <div>
-        <div className="overflow-hidden rounded-md border border-border bg-input focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30">
-          <EditorContent editor={editor} />
-        </div>
-        {namedIngredients.length > 0 && (
-          <IngredientInserter
-            ingredients={namedIngredients}
-            onInsert={insertIngredient}
-          />
-        )}
+      <div className="overflow-hidden rounded-md border border-border bg-input focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/30">
+        <EditorContent editor={editor} />
       </div>
     </IngredientsContext.Provider>
   );
 }
 
-function IngredientInserter({
+export function IngredientInserter({
   ingredients,
   onInsert,
 }: {
@@ -250,7 +246,7 @@ function IngredientInserter({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative mt-2">
+    <div className="relative">
       <button
         type="button"
         onClick={() => setOpen(!open)}

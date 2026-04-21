@@ -40,47 +40,49 @@ export function IngredientFieldList({
           className="rounded-lg border border-border bg-surface p-4"
         >
           <div className="flex items-start justify-between">
-            <div className="flex-1 space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-muted">
-                  Ingredient
-                </label>
-                <input
-                  type="text"
-                  name="ingredient-name"
-                  placeholder="e.g. Ground beef"
-                  value={row.name}
-                  onChange={(e) => updateRow(index, "name", e.target.value)}
-                  required
-                  className="mt-1 w-full rounded-md border border-border bg-input px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
-                />
-              </div>
-              <div className="flex gap-3">
-                <div className="flex-1">
+            <div className="flex-1">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="flex-1 sm:flex-[3]">
                   <label className="block text-xs font-medium text-muted">
-                    Quantity
-                  </label>
-                  <QuantityInput
-                    name="ingredient-quantity"
-                    value={row.quantity}
-                    onChange={(value) => updateRow(index, "quantity", value)}
-                    placeholder="e.g. 1/4"
-                    className="mt-1 w-full"
-                    inputClassName="bg-input"
-                  />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-xs font-medium text-muted">
-                    Unit
+                    Ingredient
                   </label>
                   <input
                     type="text"
-                    name="ingredient-unit"
-                    placeholder="e.g. cups"
-                    value={row.unit}
-                    onChange={(e) => updateRow(index, "unit", e.target.value)}
+                    name="ingredient-name"
+                    placeholder="e.g. Ground beef"
+                    value={row.name}
+                    onChange={(e) => updateRow(index, "name", e.target.value)}
+                    required
                     className="mt-1 w-full rounded-md border border-border bg-input px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
+                </div>
+                <div className="flex flex-1 gap-3">
+                  <div className="flex-1">
+                    <label className="block text-xs font-medium text-muted">
+                      Quantity
+                    </label>
+                    <QuantityInput
+                      name="ingredient-quantity"
+                      value={row.quantity}
+                      onChange={(value) => updateRow(index, "quantity", value)}
+                      placeholder="e.g. 1/4"
+                      className="mt-1 w-full"
+                      inputClassName="bg-input"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-xs font-medium text-muted">
+                      Unit
+                    </label>
+                    <input
+                      type="text"
+                      name="ingredient-unit"
+                      placeholder="e.g. cups"
+                      value={row.unit}
+                      onChange={(e) => updateRow(index, "unit", e.target.value)}
+                      className="mt-1 w-full rounded-md border border-border bg-input px-3 py-2.5 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
