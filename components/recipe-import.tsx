@@ -8,10 +8,28 @@ import {
   type ImportState,
 } from "@/app/recipe/import/actions";
 import { createRecipe } from "@/app/recipe/new/actions";
+import type { DiagnosticLog } from "@/lib/ai/types";
 
 type InputMode = "file" | "text";
 
-const initialState: ImportState = { status: "idle", errors: [], data: null };
+const initialState: ImportState = {
+  status: "idle",
+  errors: [],
+  data: null,
+  diagnosticLog: null,
+};
+
+function downloadDiagnosticLog(log: DiagnosticLog) {
+  const blob = new Blob([JSON.stringify(log, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `simmer-import-log-${log.timestamp.slice(0, 19).replace(/:/g, "-")}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export function RecipeImport() {
   const [resetKey, setResetKey] = useState(0);
@@ -26,6 +44,7 @@ export function RecipeImport() {
 
 function RecipeImportInner({ onReset }: { onReset: () => void }) {
   const [mode, setMode] = useState<InputMode>("file");
+  const [diagnostics, setDiagnostics] = useState(false);
 
   const [fileState, fileAction, filePending] = useActionState<
     ImportState,
@@ -47,12 +66,22 @@ function RecipeImportInner({ onReset }: { onReset: () => void }) {
           <p className="text-sm font-medium text-secondary">
             Recipe extracted. Review and edit before saving.
           </p>
-          <button
-            onClick={onReset}
-            className="text-sm text-muted transition-colors hover:text-foreground"
-          >
-            Start over
-          </button>
+          <div className="flex gap-3">
+            {state.diagnosticLog && (
+              <button
+                onClick={() => downloadDiagnosticLog(state.diagnosticLog!)}
+                className="text-sm text-muted transition-colors hover:text-foreground"
+              >
+                Download Log
+              </button>
+            )}
+            <button
+              onClick={onReset}
+              className="text-sm text-muted transition-colors hover:text-foreground"
+            >
+              Start over
+            </button>
+          </div>
         </div>
         <RecipeForm action={createRecipe} initialData={state.data} />
       </div>
@@ -97,9 +126,19 @@ function RecipeImportInner({ onReset }: { onReset: () => void }) {
       )}
 
       {mode === "file" ? (
-        <FileUpload action={fileAction} isPending={isPending} />
+        <FileUpload
+          action={fileAction}
+          isPending={isPending}
+          diagnostics={diagnostics}
+          onDiagnosticsChange={setDiagnostics}
+        />
       ) : (
-        <TextInput action={textAction} isPending={isPending} />
+        <TextInput
+          action={textAction}
+          isPending={isPending}
+          diagnostics={diagnostics}
+          onDiagnosticsChange={setDiagnostics}
+        />
       )}
     </div>
   );
@@ -108,16 +147,22 @@ function RecipeImportInner({ onReset }: { onReset: () => void }) {
 function FileUpload({
   action,
   isPending,
+  diagnostics,
+  onDiagnosticsChange,
 }: {
   action: (formData: FormData) => void;
   isPending: boolean;
+  diagnostics: boolean;
+  onDiagnosticsChange: (value: boolean) => void;
 }) {
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <form action={action} className="mt-6">
+    <form action={action} className="mt-4">
+      <input type="hidden" name="diagnostics" value={String(diagnostics)} />
+
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <label
         htmlFor="file"
@@ -179,13 +224,24 @@ function FileUpload({
         />
       </label>
 
-      <button
-        type="submit"
-        disabled={isPending || !fileName}
-        className="mt-6 w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
-      >
-        {isPending ? "Importing..." : "Import"}
-      </button>
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <button
+          type="submit"
+          disabled={isPending || !fileName}
+          className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
+        >
+          {isPending ? "Importing..." : "Import"}
+        </button>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={diagnostics}
+            onChange={(e) => onDiagnosticsChange(e.target.checked)}
+            className="accent-primary"
+          />
+          <span className="text-sm text-muted">Save diagnostic log</span>
+        </label>
+      </div>
     </form>
   );
 }
@@ -193,14 +249,20 @@ function FileUpload({
 function TextInput({
   action,
   isPending,
+  diagnostics,
+  onDiagnosticsChange,
 }: {
   action: (formData: FormData) => void;
   isPending: boolean;
+  diagnostics: boolean;
+  onDiagnosticsChange: (value: boolean) => void;
 }) {
   const [text, setText] = useState("");
 
   return (
-    <form action={action} className="mt-6">
+    <form action={action} className="mt-4">
+      <input type="hidden" name="diagnostics" value={String(diagnostics)} />
+
       <textarea
         name="text"
         value={text}
@@ -210,13 +272,24 @@ function TextInput({
         className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-foreground placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
       />
 
-      <button
-        type="submit"
-        disabled={isPending || !text.trim()}
-        className="mt-6 w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
-      >
-        {isPending ? "Importing..." : "Import"}
-      </button>
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <button
+          type="submit"
+          disabled={isPending || !text.trim()}
+          className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
+        >
+          {isPending ? "Importing..." : "Import"}
+        </button>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={diagnostics}
+            onChange={(e) => onDiagnosticsChange(e.target.checked)}
+            className="accent-primary"
+          />
+          <span className="text-sm text-muted">Save diagnostic log</span>
+        </label>
+      </div>
     </form>
   );
 }

@@ -5,12 +5,13 @@ import {
   extractRecipeFromFile,
   extractRecipeFromText,
 } from "@/lib/ai/extract-recipe";
-import type { ExtractedRecipe } from "@/lib/ai/types";
+import type { ExtractedRecipe, DiagnosticLog } from "@/lib/ai/types";
 
 export interface ImportState {
   status: "idle" | "error" | "success";
   errors: string[];
   data: ExtractedRecipe | null;
+  diagnosticLog: DiagnosticLog | null;
 }
 
 const ALLOWED_TYPES = [
@@ -27,9 +28,10 @@ export async function extractRecipeFromUpload(
   formData: FormData,
 ): Promise<ImportState> {
   const file = formData.get("file") as File | null;
+  const collectDiagnostics = formData.get("diagnostics") === "true";
 
   if (!file || file.size === 0) {
-    return { status: "error", errors: ["Please select a file."], data: null };
+    return { status: "error", errors: ["Please select a file."], data: null, diagnosticLog: null };
   }
 
   if (!ALLOWED_TYPES.includes(file.type)) {
@@ -39,6 +41,7 @@ export async function extractRecipeFromUpload(
         "Unsupported file type. Please upload an image (JPEG, PNG, WebP) or PDF.",
       ],
       data: null,
+      diagnosticLog: null,
     };
   }
 
@@ -47,6 +50,7 @@ export async function extractRecipeFromUpload(
       status: "error",
       errors: ["File is too large. Maximum size is 10MB."],
       data: null,
+      diagnosticLog: null,
     };
   }
 
@@ -56,6 +60,7 @@ export async function extractRecipeFromUpload(
       status: "error",
       errors: ["Please configure your AI provider in Settings first."],
       data: null,
+      diagnosticLog: null,
     };
   }
 
@@ -63,12 +68,18 @@ export async function extractRecipeFromUpload(
     const buffer = Buffer.from(await file.arrayBuffer());
     const base64 = buffer.toString("base64");
 
-    const recipe = await extractRecipeFromFile(
+    const result = await extractRecipeFromFile(
       { base64, mimeType: file.type },
       settings,
+      collectDiagnostics,
     );
 
-    return { status: "success", errors: [], data: recipe };
+    return {
+      status: "success",
+      errors: [],
+      data: result.recipe,
+      diagnosticLog: result.diagnosticLog ?? null,
+    };
   } catch (error) {
     return {
       status: "error",
@@ -78,6 +89,7 @@ export async function extractRecipeFromUpload(
           : "Failed to extract recipe. Please try again.",
       ],
       data: null,
+      diagnosticLog: null,
     };
   }
 }
@@ -87,12 +99,14 @@ export async function extractRecipeFromPaste(
   formData: FormData,
 ): Promise<ImportState> {
   const text = formData.get("text")?.toString().trim() ?? "";
+  const collectDiagnostics = formData.get("diagnostics") === "true";
 
   if (!text) {
     return {
       status: "error",
       errors: ["Please paste some recipe text."],
       data: null,
+      diagnosticLog: null,
     };
   }
 
@@ -102,12 +116,18 @@ export async function extractRecipeFromPaste(
       status: "error",
       errors: ["Please configure your AI provider in Settings first."],
       data: null,
+      diagnosticLog: null,
     };
   }
 
   try {
-    const recipe = await extractRecipeFromText(text, settings);
-    return { status: "success", errors: [], data: recipe };
+    const result = await extractRecipeFromText(text, settings, collectDiagnostics);
+    return {
+      status: "success",
+      errors: [],
+      data: result.recipe,
+      diagnosticLog: result.diagnosticLog ?? null,
+    };
   } catch (error) {
     return {
       status: "error",
@@ -117,6 +137,7 @@ export async function extractRecipeFromPaste(
           : "Failed to extract recipe. Please try again.",
       ],
       data: null,
+      diagnosticLog: null,
     };
   }
 }

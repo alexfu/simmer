@@ -1,5 +1,9 @@
 import type { Settings } from "@/app/generated/prisma/client";
-import type { ExtractedRecipe } from "@/lib/ai/types";
+import type {
+  ExtractedRecipe,
+  ExtractionResult,
+  DiagnosticPhase,
+} from "@/lib/ai/types";
 import {
   OCR_PROMPT,
   STRUCTURE_PROMPT,
@@ -126,75 +130,95 @@ function parseRecipeJson(raw: string): ExtractedRecipe {
   return { title, description, servings, ingredients, instructions };
 }
 
-/**
- * Extract recipe from an image or PDF.
- * Phase 1: OCR — extract raw text
- * Phase 2: Structure — parse into recipe JSON
- * Phase 3: Split — split shared ingredients
- * Phase 4: Tagging — add ingredient reference tags to instructions
- */
 export async function extractRecipeFromFile(
   file: { base64: string; mimeType: string },
   settings: Settings,
-): Promise<ExtractedRecipe> {
+  collectDiagnostics = false,
+): Promise<ExtractionResult> {
   const apiKey = getApiKey(settings);
   const model = settings.activeModel;
   const provider = settings.activeProvider;
+  const phases: DiagnosticPhase[] = [];
 
   // Phase 1: OCR
+  const ocrPrompt = OCR_PROMPT;
   const rawText = await callVision(
-    provider,
-    apiKey,
-    model,
-    OCR_PROMPT,
-    file.base64,
-    file.mimeType,
+    provider, apiKey, model, ocrPrompt, file.base64, file.mimeType,
   );
+  if (collectDiagnostics) {
+    phases.push({ name: "ocr", prompt: ocrPrompt, response: rawText });
+  }
 
   // Phase 2: Structure
   const structurePrompt = `${STRUCTURE_PROMPT}\n\nRecipe text:\n${rawText}`;
   const structuredRaw = await callText(provider, apiKey, model, structurePrompt);
   const structured = parseRecipeJson(structuredRaw);
+  if (collectDiagnostics) {
+    phases.push({ name: "structure", prompt: structurePrompt, response: structuredRaw, parsed: structured });
+  }
 
   // Phase 3: Split
   const splitPrompt = `${SPLIT_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(structured, null, 2)}`;
   const splitRaw = await callText(provider, apiKey, model, splitPrompt);
   const split = parseRecipeJson(splitRaw);
+  if (collectDiagnostics) {
+    phases.push({ name: "split", prompt: splitPrompt, response: splitRaw, parsed: split });
+  }
 
   // Phase 4: Tagging
   const tagPrompt = `${TAGGING_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(split, null, 2)}`;
   const taggedRaw = await callText(provider, apiKey, model, tagPrompt);
+  const finalResult = parseRecipeJson(taggedRaw);
+  if (collectDiagnostics) {
+    phases.push({ name: "tagging", prompt: tagPrompt, response: taggedRaw, parsed: finalResult });
+  }
 
-  return parseRecipeJson(taggedRaw);
+  return {
+    recipe: finalResult,
+    diagnosticLog: collectDiagnostics
+      ? { provider, model, timestamp: new Date().toISOString(), source: "file", phases, finalResult }
+      : undefined,
+  };
 }
 
-/**
- * Extract recipe from plain text input.
- * Phase 1: Structure — parse into recipe JSON
- * Phase 2: Split — split shared ingredients
- * Phase 3: Tagging — add ingredient reference tags to instructions
- */
 export async function extractRecipeFromText(
   text: string,
   settings: Settings,
-): Promise<ExtractedRecipe> {
+  collectDiagnostics = false,
+): Promise<ExtractionResult> {
   const apiKey = getApiKey(settings);
   const model = settings.activeModel;
   const provider = settings.activeProvider;
+  const phases: DiagnosticPhase[] = [];
 
   // Phase 1: Structure
   const structurePrompt = `${STRUCTURE_PROMPT}\n\nRecipe text:\n${text}`;
   const structuredRaw = await callText(provider, apiKey, model, structurePrompt);
   const structured = parseRecipeJson(structuredRaw);
+  if (collectDiagnostics) {
+    phases.push({ name: "structure", prompt: structurePrompt, response: structuredRaw, parsed: structured });
+  }
 
   // Phase 2: Split
   const splitPrompt = `${SPLIT_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(structured, null, 2)}`;
   const splitRaw = await callText(provider, apiKey, model, splitPrompt);
   const split = parseRecipeJson(splitRaw);
+  if (collectDiagnostics) {
+    phases.push({ name: "split", prompt: splitPrompt, response: splitRaw, parsed: split });
+  }
 
   // Phase 3: Tagging
   const tagPrompt = `${TAGGING_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(split, null, 2)}`;
   const taggedRaw = await callText(provider, apiKey, model, tagPrompt);
+  const finalResult = parseRecipeJson(taggedRaw);
+  if (collectDiagnostics) {
+    phases.push({ name: "tagging", prompt: tagPrompt, response: taggedRaw, parsed: finalResult });
+  }
 
-  return parseRecipeJson(taggedRaw);
+  return {
+    recipe: finalResult,
+    diagnosticLog: collectDiagnostics
+      ? { provider, model, timestamp: new Date().toISOString(), source: "text", phases, finalResult }
+      : undefined,
+  };
 }
