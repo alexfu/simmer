@@ -27,32 +27,23 @@ const MODELS: Record<string, { value: string; label: string }[]> = {
     { value: "gpt-5.4", label: "GPT-5.4" },
     { value: "gpt-5.4-mini", label: "GPT-5.4 Mini" },
     { value: "gpt-5.4-nano", label: "GPT-5.4 Nano" },
-    { value: "gpt-4.1", label: "GPT-4.1" },
-    { value: "gpt-4.1-mini", label: "GPT-4.1 Mini" },
-    { value: "gpt-4.1-nano", label: "GPT-4.1 Nano" },
-    { value: "gpt-4o", label: "GPT-4o" },
-    { value: "gpt-4o-mini", label: "GPT-4o Mini" },
-    { value: "o3", label: "o3" },
-    { value: "o3-pro", label: "o3 Pro" },
-    { value: "o3-mini", label: "o3 Mini" },
-    { value: "o4-mini", label: "o4 Mini" },
   ],
   gemini: [
-    { value: "gemini-2.5-flash", label: "Gemini 2.5 Flash" },
-    { value: "gemini-2.5-pro", label: "Gemini 2.5 Pro" },
-    { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
+    { value: "gemini-3.1-pro-preview", label: "Gemini 3.1 Pro" },
+    { value: "gemini-3-flash", label: "Gemini 3 Flash" },
+    { value: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash Lite" },
   ],
   anthropic: [
-    { value: "claude-sonnet-4-20250514", label: "Claude Sonnet 4" },
-    { value: "claude-opus-4-20250514", label: "Claude Opus 4" },
-    { value: "claude-haiku-4-20250514", label: "Claude Haiku 4" },
+    { value: "claude-opus-4-7-20250219", label: "Claude Opus 4.7" },
+    { value: "claude-sonnet-4-6-20250514", label: "Claude Sonnet 4.6" },
+    { value: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5" },
   ],
 };
 
 const DEFAULT_MODELS: Record<string, string> = {
-  openai: "gpt-4.1",
-  gemini: "gemini-2.5-flash",
-  anthropic: "claude-sonnet-4-20250514",
+  openai: "gpt-5.4",
+  gemini: "gemini-3-flash",
+  anthropic: "claude-sonnet-4-6-20250514",
 };
 
 const inputClassName =
