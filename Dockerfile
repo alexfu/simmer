@@ -1,6 +1,6 @@
 FROM node:22-alpine AS base
 
-# Install dependencies only when needed
+# Install dependencies
 FROM base AS deps
 WORKDIR /app
 
@@ -14,10 +14,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
 RUN npx prisma generate
-
-# Build Next.js
 RUN npm run build
 
 # Production image
@@ -26,33 +23,11 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Copy standalone output
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-
-# Copy generated Prisma client (app imports from @/app/generated/prisma)
-COPY --from=builder /app/app/generated ./app/generated
-
-# Copy Prisma schema, migrations, config, and CLI for runtime migrations
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
-
-# Prisma migrate needs write access to create lock files
-RUN chown -R nextjs:nodejs /app
-
-USER nextjs
+COPY --from=builder /app ./
 
 EXPOSE 3000
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Run pending migrations then start the server
-CMD node ./node_modules/prisma/build/index.js migrate deploy && node server.js
+CMD npx prisma migrate deploy && npm start
