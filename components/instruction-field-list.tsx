@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import {
   DndContext,
   closestCenter,
@@ -49,12 +50,12 @@ export function InstructionFieldList({
 
   // Generate stable IDs for sortable items
   const [itemIds] = useState(() =>
-    instructions.map(() => crypto.randomUUID()),
+    instructions.map(() => uuidv4()),
   );
 
   // Keep IDs in sync with instruction count
   while (itemIds.length < instructions.length) {
-    itemIds.push(crypto.randomUUID());
+    itemIds.push(uuidv4());
   }
   while (itemIds.length > instructions.length) {
     itemIds.pop();
@@ -101,7 +102,7 @@ export function InstructionFieldList({
   }
 
   function addRow() {
-    itemIds.push(crypto.randomUUID());
+    itemIds.push(uuidv4());
     onChange([...instructions, { text: "", note: "" }]);
   }
 
