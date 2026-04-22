@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ShoppingListEditor } from "@/components/shopping-list-editor";
+import { DeleteShoppingListButton } from "@/components/delete-shopping-list-button";
 
 interface EditShoppingListPageProps {
   params: Promise<{ id: string }>;
@@ -53,6 +54,9 @@ export default async function EditShoppingListPage({
         recipes={recipes}
         otherLists={otherLists}
       />
+      <div className="mt-8 border-t border-border pt-8">
+        <DeleteShoppingListButton listId={list.id} />
+      </div>
     </main>
   );
 }

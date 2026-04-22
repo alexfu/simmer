@@ -4,7 +4,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ShoppingListView } from "@/components/shopping-list-view";
-import { DeleteShoppingListButton } from "@/components/delete-shopping-list-button";
 
 interface ShoppingListPageProps {
   params: Promise<{ id: string }>;
@@ -46,14 +45,13 @@ export default async function ShoppingListPage({
         </div>
       )}
 
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4">
         <Link
           href={`/shopping-list/${list.id}/edit`}
           className="rounded-md border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-border"
         >
           Edit
         </Link>
-        <DeleteShoppingListButton listId={list.id} />
       </div>
 
       <ShoppingListView items={list.items} />

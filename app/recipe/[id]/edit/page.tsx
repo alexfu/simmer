@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { RecipeForm } from "@/components/recipe-form";
 import { updateRecipe } from "@/app/recipe/[id]/edit/actions";
+import { DeleteRecipeButton } from "@/components/delete-recipe-button";
 
 interface EditRecipePageProps {
   params: Promise<{ id: string }>;
@@ -46,6 +47,9 @@ export default async function EditRecipePage({ params }: EditRecipePageProps) {
         Edit Recipe
       </h1>
       <RecipeForm action={action} initialData={initialData} />
+      <div className="mt-8 border-t border-border pt-8">
+        <DeleteRecipeButton recipeId={id} />
+      </div>
     </main>
   );
 }
