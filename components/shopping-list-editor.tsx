@@ -40,11 +40,18 @@ interface Recipe {
   servings: number;
 }
 
+interface OtherShoppingList {
+  id: string;
+  name: string;
+  items: { name: string; quantity: string; unit: string }[];
+}
+
 interface ShoppingListEditorProps {
   listId: string;
   name: string;
   items: ShoppingListItem[];
   recipes: Recipe[];
+  otherLists: OtherShoppingList[];
 }
 
 const inputClassName =
@@ -55,6 +62,7 @@ export function ShoppingListEditor({
   name: initialName,
   items: initialItems,
   recipes,
+  otherLists,
 }: ShoppingListEditorProps) {
   const action = updateShoppingList.bind(null, listId);
   const [state, formAction, isPending] = useActionState<
@@ -68,6 +76,7 @@ export function ShoppingListEditor({
     initialItems.map(() => uuidv4()),
   );
   const [showRecipePicker, setShowRecipePicker] = useState(false);
+  const [showListPicker, setShowListPicker] = useState(false);
   const [focusItemId, setFocusItemId] = useState<string | null>(null);
 
   const sensors = useSensors(
@@ -187,11 +196,11 @@ export function ShoppingListEditor({
                 ))}
               </SortableContext>
             </DndContext>
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
               <button
                 type="button"
                 onClick={addItem}
-                className="flex-1 rounded-lg border border-dashed border-border px-4 py-3 text-sm font-medium text-muted transition-colors hover:border-primary/40 hover:text-foreground sm:flex-none"
+                className="w-full rounded-lg border border-dashed border-border px-4 py-3 text-sm font-medium text-muted transition-colors hover:border-primary/40 hover:text-foreground sm:w-auto"
               >
                 + Add Item
               </button>
@@ -199,9 +208,18 @@ export function ShoppingListEditor({
                 <button
                   type="button"
                   onClick={() => setShowRecipePicker(true)}
-                  className="flex-1 rounded-lg border border-dashed border-border px-4 py-3 text-sm font-medium text-muted transition-colors hover:border-primary/40 hover:text-foreground sm:flex-none"
+                  className="w-full rounded-lg border border-dashed border-border px-4 py-3 text-sm font-medium text-muted transition-colors hover:border-primary/40 hover:text-foreground sm:w-auto"
                 >
                   + Add from Recipe
+                </button>
+              )}
+              {otherLists.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowListPicker(true)}
+                  className="w-full rounded-lg border border-dashed border-border px-4 py-3 text-sm font-medium text-muted transition-colors hover:border-primary/40 hover:text-foreground sm:w-auto"
+                >
+                  + Add from List
                 </button>
               )}
             </div>
@@ -222,6 +240,14 @@ export function ShoppingListEditor({
           recipes={recipes}
           onAdd={handleIngredientsAdded}
           onClose={() => setShowRecipePicker(false)}
+        />
+      )}
+
+      {showListPicker && (
+        <ShoppingListItemPicker
+          lists={otherLists}
+          onAdd={handleIngredientsAdded}
+          onClose={() => setShowListPicker(false)}
         />
       )}
     </>
@@ -351,6 +377,148 @@ function SortableShoppingItem({
         </button>
       </div>
     </div>
+  );
+}
+
+function ShoppingListItemPicker({
+  lists,
+  onAdd,
+  onClose,
+}: {
+  lists: OtherShoppingList[];
+  onAdd: (items: ShoppingListItem[]) => void;
+  onClose: () => void;
+}) {
+  const [selectedList, setSelectedList] = useState<OtherShoppingList | null>(
+    null,
+  );
+  const [selectedItems, setSelectedItems] = useState<Record<number, boolean>>(
+    {},
+  );
+
+  function handleSelectList(list: OtherShoppingList) {
+    setSelectedList(list);
+    setSelectedItems(
+      Object.fromEntries(list.items.map((_, i) => [i, true])),
+    );
+  }
+
+  function toggleItem(index: number) {
+    setSelectedItems((prev) => ({ ...prev, [index]: !prev[index] }));
+  }
+
+  function handleAdd() {
+    if (!selectedList) return;
+    const selected = selectedList.items
+      .filter((_, i) => selectedItems[i])
+      .map((i) => ({ name: i.name, quantity: i.quantity, unit: i.unit }));
+    onAdd(selected);
+  }
+
+  return (
+    <>
+      <div
+        className="fixed inset-0 z-40 bg-foreground/20"
+        onClick={onClose}
+      />
+      <div className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-border bg-surface px-6 pb-8 pt-4 shadow-lg sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl sm:border sm:pb-6">
+        <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border sm:hidden" />
+
+        {!selectedList ? (
+          <div>
+            <h3 className="font-serif text-lg font-semibold text-foreground">
+              Select a Shopping List
+            </h3>
+            <div className="mt-4 max-h-96 space-y-2 overflow-y-auto">
+              {lists.map((list) => (
+                <button
+                  key={list.id}
+                  type="button"
+                  onClick={() => handleSelectList(list)}
+                  className="w-full rounded-lg border border-border px-4 py-3 text-left text-sm text-foreground transition-colors hover:bg-background"
+                >
+                  {list.name}
+                  <span className="ml-2 text-muted">
+                    ({list.items.length} items)
+                  </span>
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-4 w-full rounded-lg border border-border py-3 text-sm font-medium text-muted transition-colors hover:text-foreground sm:w-auto sm:border-0 sm:py-1"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <div>
+            <h3 className="font-serif text-lg font-semibold text-foreground">
+              {selectedList.name}
+            </h3>
+
+            <div className="mt-4 max-h-64 space-y-1 overflow-y-auto">
+              {selectedList.items.map((item, index) => {
+                const display = [
+                  item.quantity ? formatQuantity(item.quantity, 1) : "",
+                  item.unit,
+                  item.name,
+                ]
+                  .filter(Boolean)
+                  .join(" ");
+
+                return (
+                  <label
+                    key={index}
+                    className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-background"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedItems[index] ?? false}
+                      onChange={() => toggleItem(index)}
+                      className="accent-primary"
+                    />
+                    <span
+                      className={`text-sm ${
+                        selectedItems[index]
+                          ? "text-foreground"
+                          : "text-muted line-through"
+                      }`}
+                    >
+                      {display}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+
+            <div className="mt-4 flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedList(null);
+                  setSelectedItems({});
+                }}
+                className="flex-1 rounded-lg border border-border py-3 text-sm font-medium text-muted transition-colors hover:text-foreground sm:flex-none sm:px-4 sm:py-2"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={handleAdd}
+                disabled={
+                  Object.values(selectedItems).filter(Boolean).length === 0
+                }
+                className="flex-1 rounded-lg bg-primary py-3 text-sm font-medium text-surface transition-colors hover:bg-primary-hover disabled:opacity-40 sm:flex-none sm:px-6 sm:py-2"
+              >
+                Add Selected
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 

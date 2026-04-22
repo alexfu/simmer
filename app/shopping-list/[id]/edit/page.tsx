@@ -13,7 +13,7 @@ export default async function EditShoppingListPage({
 }: EditShoppingListPageProps) {
   const { id } = await params;
 
-  const [list, recipes] = await Promise.all([
+  const [list, recipes, otherLists] = await Promise.all([
     prisma.shoppingList.findUnique({
       where: { id },
       include: { items: true },
@@ -21,6 +21,15 @@ export default async function EditShoppingListPage({
     prisma.recipe.findMany({
       select: { id: true, title: true, servings: true },
       orderBy: { title: "asc" },
+    }),
+    prisma.shoppingList.findMany({
+      where: { id: { not: id } },
+      select: {
+        id: true,
+        name: true,
+        items: { select: { name: true, quantity: true, unit: true } },
+      },
+      orderBy: { name: "asc" },
     }),
   ]);
 
@@ -42,6 +51,7 @@ export default async function EditShoppingListPage({
           unit: i.unit,
         }))}
         recipes={recipes}
+        otherLists={otherLists}
       />
     </main>
   );
