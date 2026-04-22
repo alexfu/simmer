@@ -76,9 +76,6 @@ function parseRecipeJson(raw: string): ExtractedRecipe {
   const parsed = JSON.parse(cleanJson(raw));
 
   const title = typeof parsed.title === "string" ? parsed.title.trim() : "";
-  if (!title) {
-    throw new Error("AI could not extract a recipe title.");
-  }
 
   const description =
     typeof parsed.description === "string" ? parsed.description.trim() : null;
