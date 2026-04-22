@@ -9,6 +9,31 @@ export interface EditShoppingListState {
   errors: string[];
 }
 
+export async function autoSaveShoppingList(
+  listId: string,
+  name: string,
+  items: { name: string; quantity: string; unit: string }[],
+): Promise<void> {
+  const filtered = items.filter((item) => item.name.trim().length > 0);
+
+  await prisma.$transaction([
+    prisma.shoppingListItem.deleteMany({ where: { shoppingListId: listId } }),
+    prisma.shoppingList.update({
+      where: { id: listId },
+      data: {
+        name: name.trim() || "Shopping List",
+        items: {
+          create: filtered.map((item) => ({
+            name: item.name.trim(),
+            quantity: item.quantity.trim(),
+            unit: item.unit.trim(),
+          })),
+        },
+      },
+    }),
+  ]);
+}
+
 export async function updateShoppingList(
   listId: string,
   _prevState: EditShoppingListState,

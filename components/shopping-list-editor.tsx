@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useRef, useState, useTransition } from "react";
+import { useActionState, useCallback, useEffect, useId, useRef, useState, useTransition } from "react";
 import {
   DndContext,
   closestCenter,
@@ -21,6 +21,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { v4 as uuidv4 } from "uuid";
 import {
   updateShoppingList,
+  autoSaveShoppingList,
   getRecipeIngredients,
   addIngredientsToList,
   type EditShoppingListState,
@@ -75,9 +76,36 @@ export function ShoppingListEditor({
   const [itemIds, setItemIds] = useState(() =>
     initialItems.map(() => uuidv4()),
   );
+  const [listName, setListName] = useState(initialName);
   const [showRecipePicker, setShowRecipePicker] = useState(false);
   const [showListPicker, setShowListPicker] = useState(false);
   const [focusItemId, setFocusItemId] = useState<string | null>(null);
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isInitialRender = useRef(true);
+  const itemsRef = useRef(items);
+  const nameRef = useRef(listName);
+  itemsRef.current = items;
+  nameRef.current = listName;
+
+  const serializedState = JSON.stringify({ listName, items });
+
+  useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      return;
+    }
+
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+
+    autoSaveTimer.current = setTimeout(() => {
+      autoSaveShoppingList(listId, nameRef.current, itemsRef.current);
+    }, 2000);
+
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serializedState, listId]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -161,7 +189,8 @@ export function ShoppingListEditor({
             id="name"
             type="text"
             name="name"
-            defaultValue={initialName}
+            value={listName}
+            onChange={(e) => setListName(e.target.value)}
             className={`mt-1 ${inputClassName}`}
           />
         </div>
