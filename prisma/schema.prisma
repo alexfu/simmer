@@ -38,6 +38,34 @@ model Instruction {
   recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
 }
 
+model ShoppingList {
+  id        String               @id @default(cuid())
+  name      String
+  items     ShoppingListItem[]
+  recipes   ShoppingListRecipe[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+}
+
+model ShoppingListItem {
+  id             String       @id @default(cuid())
+  name           String
+  quantity       String
+  unit           String
+  checked        Boolean      @default(false)
+  shoppingListId String
+  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+}
+
+model ShoppingListRecipe {
+  id             String       @id @default(cuid())
+  recipeId       String
+  recipeTitle    String
+  servings       Int
+  shoppingListId String
+  shoppingList   ShoppingList @relation(fields: [shoppingListId], references: [id], onDelete: Cascade)
+}
+
 model Settings {
   id              String   @id @default("global")
   activeProvider  String   @default("openai")
