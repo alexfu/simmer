@@ -28,6 +28,7 @@ import {
   type RecipeIngredient,
 } from "@/app/shopping-list/[id]/edit/actions";
 import { formatQuantity } from "@/lib/format-quantity";
+import { QuantityInput } from "@/components/quantity-input";
 
 interface ShoppingListItem {
   name: string;
@@ -373,13 +374,13 @@ function SortableShoppingItem({
             <div className="flex flex-1 gap-3">
               <div className="flex-1">
                 <label className="block text-xs font-medium text-muted">Quantity</label>
-                <input
-                  type="text"
+                <QuantityInput
                   name="item-quantity"
-                  placeholder="e.g. 2"
                   value={item.quantity}
-                  onChange={(e) => onUpdate(index, "quantity", e.target.value)}
-                  className={`mt-1 ${inputClassName}`}
+                  onChange={(value) => onUpdate(index, "quantity", value)}
+                  placeholder="e.g. 1/2"
+                  className="mt-1 w-full"
+                  inputClassName="bg-input"
                 />
               </div>
               <div className="flex-1">
