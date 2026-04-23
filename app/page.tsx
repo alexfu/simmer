@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { RecipeCard } from "@/components/recipe-card";
+import { RecipeList } from "@/components/recipe-list";
 
 export default async function HomePage() {
   const recipes = await prisma.recipe.findMany({
@@ -39,18 +39,16 @@ export default async function HomePage() {
           </p>
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {recipes.map((recipe) => (
-            <RecipeCard
-              key={recipe.id}
-              id={recipe.id}
-              title={recipe.title}
-              description={recipe.description}
-              imageUrl={recipe.imageUrl}
-              servings={recipe.servings}
-            />
-          ))}
-        </div>
+        <RecipeList
+          recipes={recipes.map((r) => ({
+            id: r.id,
+            title: r.title,
+            description: r.description,
+            imageUrl: r.imageUrl,
+            servings: r.servings,
+            timeRating: r.timeRating,
+          }))}
+        />
       )}
     </main>
   );
