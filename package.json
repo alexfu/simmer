@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "format": "prettier --write .",
-    "db:seed": "npx tsx prisma/seed.ts"
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
