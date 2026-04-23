@@ -58,9 +58,14 @@ export default async function ShoppingListIndexPage() {
                     {checked}/{total} items
                   </span>
                 </div>
-                {recipeNames && (
-                  <p className="mt-1 text-sm text-muted">{recipeNames}</p>
-                )}
+                <p className="mt-1 text-xs text-muted">
+                  {list.createdAt.toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                  {recipeNames && ` · ${recipeNames}`}
+                </p>
                 {total > 0 && (
                   <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border">
                     <div
