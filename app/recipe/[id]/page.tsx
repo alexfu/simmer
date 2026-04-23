@@ -26,6 +26,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
     title: recipe.title,
     description: recipe.description,
     notes: recipe.notes,
+    timeRating: recipe.timeRating,
     imageUrl: recipe.imageUrl,
     servings: recipe.servings,
     ingredients: recipe.ingredients.map((i) => ({

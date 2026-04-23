@@ -7,6 +7,7 @@ import { ServingsAdjuster } from "@/components/servings-adjuster";
 import { IngredientList } from "@/components/ingredient-list";
 import { InstructionList } from "@/components/instruction-list";
 import { RichTextDisplay } from "@/components/rich-text-display";
+import { TimeRating, TimeRatingBadge } from "@/components/time-rating";
 
 interface RecipeDetailProps {
   recipe: {
@@ -14,6 +15,7 @@ interface RecipeDetailProps {
     title: string;
     description: string | null;
     notes: string | null;
+    timeRating: "quick" | "medium" | "involved" | null;
     imageUrl: string | null;
     servings: number;
     ingredients: {
@@ -66,8 +68,9 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
         <p className="mt-3 text-muted">{recipe.description}</p>
       )}
 
-      <div className="mt-8">
+      <div className="mt-6 flex flex-wrap items-center gap-6">
         <ServingsAdjuster servings={servings} onChange={setServings} />
+        {recipe.timeRating && <TimeRatingBadge value={recipe.timeRating} />}
       </div>
 
       <section className="mt-8">
@@ -98,6 +101,15 @@ export function RecipeDetail({ recipe }: RecipeDetailProps) {
           </div>
         </section>
       )}
+
+      <section className="mt-8">
+        <h2 className="font-serif text-xl font-semibold text-foreground">
+          How long did this take?
+        </h2>
+        <div className="mt-4">
+          <TimeRating recipeId={recipe.id} value={recipe.timeRating} />
+        </div>
+      </section>
     </article>
   );
 }
