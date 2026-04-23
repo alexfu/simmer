@@ -4,6 +4,7 @@ export interface ParsedRecipeData {
   title: string;
   description: string | null;
   notes: string | null;
+  imageUrl: string | null;
   servings: number;
   ingredients: { name: string; quantity: string; unit: string }[];
   instructions: { text: string; note: string | null }[];
@@ -16,6 +17,7 @@ export function parseRecipeForm(formData: FormData): {
   const title = formData.get("title")?.toString().trim() ?? "";
   const description = formData.get("description")?.toString().trim() || null;
   const notes = formData.get("recipe-notes")?.toString().trim() || null;
+  const imageUrl = formData.get("imageUrl")?.toString().trim() || null;
   const servingsRaw = Number(formData.get("servings"));
   const servings =
     Number.isFinite(servingsRaw) && servingsRaw >= 1
@@ -80,7 +82,7 @@ export function parseRecipeForm(formData: FormData): {
   }
 
   return {
-    data: { title, description, notes, servings, ingredients, instructions },
+    data: { title, description, notes, imageUrl, servings, ingredients, instructions },
     errors: [],
   };
 }

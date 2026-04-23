@@ -129,7 +129,7 @@ function parseRecipeJson(raw: string): ExtractedRecipe {
     throw new Error("AI could not extract any instructions.");
   }
 
-  return { title, description, notes, servings, ingredients, instructions };
+  return { title, description, notes, imageUrl: null, servings, ingredients, instructions };
 }
 
 export async function extractRecipeFromFile(

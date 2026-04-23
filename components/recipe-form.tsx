@@ -4,6 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 import { IngredientFieldList } from "@/components/ingredient-field-list";
 import { InstructionFieldList } from "@/components/instruction-field-list";
 import { RichTextEditor } from "@/components/rich-text-editor";
+import { ImageUpload } from "@/components/image-upload";
 import { parseInstructionTags } from "@/lib/parse-instruction-tags";
 
 interface FormState {
@@ -27,6 +28,7 @@ interface RecipeFormProps {
     title: string;
     description: string | null;
     notes: string | null;
+    imageUrl: string | null;
     servings: number;
     ingredients: { name: string; quantity: string; unit: string }[];
     instructions: { text: string; note?: string | null }[];
@@ -62,6 +64,7 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
   );
 
   const [recipeNotes, setRecipeNotes] = useState(initialData?.notes ?? "");
+  const [imageUrl, setImageUrl] = useState(initialData?.imageUrl ?? null);
 
   const unreferencedIngredients = useMemo(() => {
     const referencedNames = new Set<string>();
@@ -89,6 +92,11 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
           </ul>
         </div>
       )}
+
+      <section>
+        <ImageUpload value={imageUrl} onChange={setImageUrl} />
+        <input type="hidden" name="imageUrl" value={imageUrl ?? ""} />
+      </section>
 
       <div className="space-y-4">
         <div>

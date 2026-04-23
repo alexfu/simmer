@@ -23,6 +23,7 @@ export async function createRecipe(
       title: data.title,
       description: data.description,
       notes: data.notes,
+      imageUrl: data.imageUrl,
       servings: data.servings,
       ingredients: {
         create: data.ingredients.map((ing) => ({

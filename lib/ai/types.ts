@@ -2,6 +2,7 @@ export interface ExtractedRecipe {
   title: string;
   description: string | null;
   notes: string | null;
+  imageUrl: string | null;
   servings: number;
   ingredients: { name: string; quantity: string; unit: string }[];
   instructions: { text: string; note?: string | null }[];
