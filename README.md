@@ -1,6 +1,8 @@
 # Simmer
 
-A recipe app that lets you store, scale, and organize recipes. Built with Next.js, TypeScript, and Tailwind CSS.
+A self-hostable recipe app for storing, scaling, and organizing your recipes.
+
+Built with Next.js, TypeScript, Tailwind CSS, and PostgreSQL.
 
 ## Features
 
@@ -68,12 +70,19 @@ Starts PostgreSQL and the Next.js dev server with hot reloading.
 
 ### Production
 
+Migrations run automatically on container startup.
+
+#### Image storage
+
+Recipe images are stored on the local filesystem in `./uploads` by default. Use a volume mount to persist images across container restarts. The upload directory can be customized with the `UPLOAD_DIR` environment variable.
+
 ```bash
 docker build -t simmer .
-docker run -p 3000:3000 -e DATABASE_URL="postgresql://user:password@your-db-host:5432/simmer" simmer
+docker run -p 3000:3000 \
+  -e DATABASE_URL="postgresql://user:password@your-db-host:5432/simmer" \
+  -v simmer-uploads:/app/uploads \
+  simmer
 ```
-
-Migrations run automatically on container startup.
 
 ## Scripts
 
