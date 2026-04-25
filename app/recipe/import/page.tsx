@@ -15,10 +15,12 @@ export default function ImportRecipePage() {
           Tips for best results
         </p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-muted">
-          <li>Use specific quantities with units (e.g. "2 tbsp" not "some")</li>
+          <li>Use specific quantities with units (e.g. &ldquo;2 tbsp&rdquo; not &ldquo;some&rdquo;)</li>
           <li>List each ingredient on its own line</li>
           <li>Separate ingredients from instructions</li>
-          <li>Use single quantities, not ranges (e.g. "8 cloves" not "6-8 cloves")</li>
+          <li>
+            Use single quantities, not ranges (e.g. &ldquo;8 cloves&rdquo; not &ldquo;6-8 cloves&rdquo;)
+          </li>
           <li>Include the number of servings</li>
           <li>For images, ensure text is clearly readable</li>
         </ul>

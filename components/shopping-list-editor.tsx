@@ -1,6 +1,13 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useId, useRef, useState, useTransition } from "react";
+import {
+  useActionState,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import {
   DndContext,
   closestCenter,
@@ -23,7 +30,6 @@ import {
   updateShoppingList,
   autoSaveShoppingList,
   getRecipeIngredients,
-  addIngredientsToList,
   type EditShoppingListState,
   type RecipeIngredient,
 } from "@/app/shopping-list/[id]/edit/actions";
@@ -83,11 +89,6 @@ export function ShoppingListEditor({
   const [focusItemId, setFocusItemId] = useState<string | null>(null);
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isInitialRender = useRef(true);
-  const itemsRef = useRef(items);
-  const nameRef = useRef(listName);
-  itemsRef.current = items;
-  nameRef.current = listName;
-
   const serializedState = JSON.stringify({ listName, items });
 
   useEffect(() => {
@@ -98,20 +99,26 @@ export function ShoppingListEditor({
 
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
 
+    const currentName = listName;
+    const currentItems = items;
+
     autoSaveTimer.current = setTimeout(() => {
-      autoSaveShoppingList(listId, nameRef.current, itemsRef.current);
+      autoSaveShoppingList(listId, currentName, currentItems);
     }, 2000);
 
     return () => {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serializedState, listId]);
+  }, [serializedState, listId, listName, items]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 5 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
   function handleDragEnd(event: DragEndEvent) {
@@ -142,9 +149,7 @@ export function ShoppingListEditor({
     value: string,
   ) {
     setItems((prev) =>
-      prev.map((item, i) =>
-        i === index ? { ...item, [field]: value } : item,
-      ),
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item)),
     );
   }
 
@@ -299,7 +304,11 @@ function SortableShoppingItem({
   index: number;
   autoFocus?: boolean;
   onFocused?: () => void;
-  onUpdate: (index: number, field: keyof ShoppingListItem, value: string) => void;
+  onUpdate: (
+    index: number,
+    field: keyof ShoppingListItem,
+    value: string,
+  ) => void;
   onRemove: () => void;
   onAddNext: () => void;
 }) {
@@ -318,12 +327,14 @@ function SortableShoppingItem({
     transition,
   };
 
-  if (autoFocus && nameInputRef.current) {
-    requestAnimationFrame(() => {
-      nameInputRef.current?.focus();
-      onFocused?.();
-    });
-  }
+  useEffect(() => {
+    if (autoFocus) {
+      requestAnimationFrame(() => {
+        nameInputRef.current?.focus();
+        onFocused?.();
+      });
+    }
+  }, [autoFocus, onFocused]);
 
   return (
     <div
@@ -353,7 +364,9 @@ function SortableShoppingItem({
           </button>
           <div className="flex flex-1 flex-col gap-3 sm:flex-row">
             <div className="flex-1 sm:flex-[3]">
-              <label className="block text-xs font-medium text-muted">Item</label>
+              <label className="block text-xs font-medium text-muted">
+                Item
+              </label>
               <input
                 ref={nameInputRef}
                 type="text"
@@ -373,7 +386,9 @@ function SortableShoppingItem({
             </div>
             <div className="flex flex-1 gap-3">
               <div className="flex-1">
-                <label className="block text-xs font-medium text-muted">Quantity</label>
+                <label className="block text-xs font-medium text-muted">
+                  Quantity
+                </label>
                 <QuantityInput
                   name="item-quantity"
                   value={item.quantity}
@@ -384,7 +399,9 @@ function SortableShoppingItem({
                 />
               </div>
               <div className="flex-1">
-                <label className="block text-xs font-medium text-muted">Unit</label>
+                <label className="block text-xs font-medium text-muted">
+                  Unit
+                </label>
                 <input
                   type="text"
                   name="item-unit"
@@ -428,9 +445,7 @@ function ShoppingListItemPicker({
 
   function handleSelectList(list: OtherShoppingList) {
     setSelectedList(list);
-    setSelectedItems(
-      Object.fromEntries(list.items.map((_, i) => [i, true])),
-    );
+    setSelectedItems(Object.fromEntries(list.items.map((_, i) => [i, true])));
   }
 
   function toggleItem(index: number) {
@@ -447,10 +462,7 @@ function ShoppingListItemPicker({
 
   return (
     <>
-      <div
-        className="fixed inset-0 z-40 bg-foreground/20"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-40 bg-foreground/20" onClick={onClose} />
       <div className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-border bg-surface px-6 pb-8 pt-4 shadow-lg sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl sm:border sm:pb-6">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border sm:hidden" />
 
@@ -610,10 +622,7 @@ function RecipeIngredientPicker({
 
   return (
     <>
-      <div
-        className="fixed inset-0 z-40 bg-foreground/20"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-40 bg-foreground/20" onClick={onClose} />
       <div className="fixed inset-x-0 bottom-0 z-50 max-h-[85vh] overflow-y-auto rounded-t-2xl border-t border-border bg-surface px-6 pb-8 pt-4 shadow-lg sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl sm:border sm:pb-6">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-border sm:hidden" />
 
@@ -699,7 +708,9 @@ function RecipeIngredientPicker({
                       />
                       <span
                         className={`text-sm ${
-                          ing.selected ? "text-foreground" : "text-muted line-through"
+                          ing.selected
+                            ? "text-foreground"
+                            : "text-muted line-through"
                         }`}
                       >
                         {display}
