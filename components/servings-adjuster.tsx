@@ -5,7 +5,10 @@ interface ServingsAdjusterProps {
   onChange: (servings: number) => void;
 }
 
-export function ServingsAdjuster({ servings, onChange }: ServingsAdjusterProps) {
+export function ServingsAdjuster({
+  servings,
+  onChange,
+}: ServingsAdjusterProps) {
   return (
     <div className="flex items-center gap-4">
       <span className="text-sm font-medium text-foreground">Servings</span>

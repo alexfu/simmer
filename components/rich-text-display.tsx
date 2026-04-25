@@ -3,7 +3,10 @@ interface RichTextDisplayProps {
   className?: string;
 }
 
-export function RichTextDisplay({ html, className = "" }: RichTextDisplayProps) {
+export function RichTextDisplay({
+  html,
+  className = "",
+}: RichTextDisplayProps) {
   return (
     <div
       className={`rich-text text-sm text-foreground ${className}`}

@@ -29,9 +29,7 @@ export function RecipeList({ recipes }: RecipeListProps) {
   const [filter, setFilter] = useState<TimeRatingFilter>("all");
 
   const filtered =
-    filter === "all"
-      ? recipes
-      : recipes.filter((r) => r.timeRating === filter);
+    filter === "all" ? recipes : recipes.filter((r) => r.timeRating === filter);
 
   return (
     <div>

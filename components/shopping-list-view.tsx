@@ -39,11 +39,7 @@ export function ShoppingListView({ items }: ShoppingListViewProps) {
       {unchecked.length > 0 && (
         <ul className="space-y-2">
           {unchecked.map((item) => (
-            <ShoppingItem
-              key={item.id}
-              item={item}
-              onToggle={handleToggle}
-            />
+            <ShoppingItem key={item.id} item={item} onToggle={handleToggle} />
           ))}
         </ul>
       )}
@@ -55,11 +51,7 @@ export function ShoppingListView({ items }: ShoppingListViewProps) {
           </p>
           <ul className="space-y-2">
             {checked.map((item) => (
-              <ShoppingItem
-                key={item.id}
-                item={item}
-                onToggle={handleToggle}
-              />
+              <ShoppingItem key={item.id} item={item} onToggle={handleToggle} />
             ))}
           </ul>
         </div>
@@ -97,14 +89,10 @@ function ShoppingItem({
       />
       <span
         className={`flex-1 text-sm ${
-          item.checked
-            ? "text-muted line-through"
-            : "text-foreground"
+          item.checked ? "text-muted line-through" : "text-foreground"
         }`}
       >
-        {hasQuantity && (
-          <span className="font-medium">{quantityDisplay} </span>
-        )}
+        {hasQuantity && <span className="font-medium">{quantityDisplay} </span>}
         {hasUnit && <span className="text-muted">{item.unit} </span>}
         {item.name}
       </span>

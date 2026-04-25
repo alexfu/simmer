@@ -28,9 +28,7 @@ export default async function ShoppingListIndexPage() {
 
       {lists.length === 0 ? (
         <div className="mt-16 text-center">
-          <p className="font-serif text-xl text-muted">
-            No shopping lists yet
-          </p>
+          <p className="font-serif text-xl text-muted">No shopping lists yet</p>
           <p className="mt-2 text-sm text-muted">
             Create one from your recipes.
           </p>

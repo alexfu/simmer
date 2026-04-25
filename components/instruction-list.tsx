@@ -82,7 +82,9 @@ function InstructionSegmentView({
   const ingredient = ingredients.find(
     (ing) => ing.name.toLowerCase() === segment.name.toLowerCase(),
   );
-  const quantity = ingredient?.quantity ? formatQuantity(ingredient.quantity, scale) : "";
+  const quantity = ingredient?.quantity
+    ? formatQuantity(ingredient.quantity, scale)
+    : "";
   const unit = ingredient?.unit ?? "";
   const display = [quantity, unit, segment.name].filter(Boolean).join(" ");
 

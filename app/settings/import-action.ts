@@ -23,7 +23,10 @@ export async function importRecipes(json: string): Promise<ImportResult> {
   try {
     const parsed = JSON.parse(json);
     if (!Array.isArray(parsed)) {
-      return { success: false, message: "Invalid format: expected an array of recipes." };
+      return {
+        success: false,
+        message: "Invalid format: expected an array of recipes.",
+      };
     }
     recipes = parsed;
   } catch {
@@ -37,7 +40,11 @@ export async function importRecipes(json: string): Promise<ImportResult> {
   let imported = 0;
 
   for (const recipe of recipes) {
-    if (!recipe.title || !Array.isArray(recipe.ingredients) || !Array.isArray(recipe.instructions)) {
+    if (
+      !recipe.title ||
+      !Array.isArray(recipe.ingredients) ||
+      !Array.isArray(recipe.instructions)
+    ) {
       continue;
     }
 

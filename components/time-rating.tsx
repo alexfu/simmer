@@ -14,7 +14,11 @@ interface TimeRatingBadgeProps {
   value: TimeRatingValue;
 }
 
-const RATINGS: { value: TimeRatingValue; label: string; description: string }[] = [
+const RATINGS: {
+  value: TimeRatingValue;
+  label: string;
+  description: string;
+}[] = [
   { value: "quick", label: "Quick", description: "Under 30 min" },
   { value: "medium", label: "Medium", description: "30–60 min" },
   { value: "involved", label: "Involved", description: "60+ min" },

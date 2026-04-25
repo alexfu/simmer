@@ -9,7 +9,9 @@ function extractOutputText(json: Record<string, unknown>): string {
   if (Array.isArray(output)) {
     for (const item of output) {
       if (item.type === "message") {
-        const content = item.content as Array<Record<string, unknown>> | undefined;
+        const content = item.content as
+          | Array<Record<string, unknown>>
+          | undefined;
         if (Array.isArray(content)) {
           for (const part of content) {
             if (part.type === "output_text" && typeof part.text === "string") {

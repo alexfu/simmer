@@ -100,7 +100,10 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
 
       <div className="space-y-4">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-foreground">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-foreground"
+          >
             Title
           </label>
           <input
@@ -114,7 +117,10 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-foreground">
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-foreground"
+          >
             Description
           </label>
           <textarea
@@ -127,7 +133,10 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
         </div>
 
         <div>
-          <label htmlFor="servings" className="block text-sm font-medium text-foreground">
+          <label
+            htmlFor="servings"
+            className="block text-sm font-medium text-foreground"
+          >
             Servings
           </label>
           <input
@@ -158,7 +167,11 @@ export function RecipeForm({ action, initialData }: RecipeFormProps) {
         </h2>
         <InstructionFieldList
           instructions={instructions}
-          ingredients={ingredients.map((i) => ({ name: i.name, unit: i.unit, quantity: i.quantity }))}
+          ingredients={ingredients.map((i) => ({
+            name: i.name,
+            unit: i.unit,
+            quantity: i.quantity,
+          }))}
           onChange={setInstructions}
         />
       </section>

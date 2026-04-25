@@ -1,10 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import {
-  saveSettings,
-  type SettingsFormState,
-} from "@/app/settings/actions";
+import { saveSettings, type SettingsFormState } from "@/app/settings/actions";
 
 interface SettingsFormProps {
   initialData: {

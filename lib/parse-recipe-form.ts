@@ -24,11 +24,21 @@ export function parseRecipeForm(formData: FormData): {
       ? Math.floor(servingsRaw)
       : 0;
 
-  const names = formData.getAll("ingredient-name").map((v) => v.toString().trim());
-  const quantities = formData.getAll("ingredient-quantity").map((v) => v.toString().trim());
-  const units = formData.getAll("ingredient-unit").map((v) => v.toString().trim());
-  const instructionTexts = formData.getAll("instruction-text").map((v) => v.toString().trim());
-  const instructionNotes = formData.getAll("instruction-note").map((v) => v.toString().trim());
+  const names = formData
+    .getAll("ingredient-name")
+    .map((v) => v.toString().trim());
+  const quantities = formData
+    .getAll("ingredient-quantity")
+    .map((v) => v.toString().trim());
+  const units = formData
+    .getAll("ingredient-unit")
+    .map((v) => v.toString().trim());
+  const instructionTexts = formData
+    .getAll("instruction-text")
+    .map((v) => v.toString().trim());
+  const instructionNotes = formData
+    .getAll("instruction-note")
+    .map((v) => v.toString().trim());
 
   const errors: string[] = [];
 
@@ -82,7 +92,15 @@ export function parseRecipeForm(formData: FormData): {
   }
 
   return {
-    data: { title, description, notes, imageUrl, servings, ingredients, instructions },
+    data: {
+      title,
+      description,
+      notes,
+      imageUrl,
+      servings,
+      ingredients,
+      instructions,
+    },
     errors: [],
   };
 }

@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import { getImageStorage } from "@/lib/storage";
 
-const ALLOWED_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 

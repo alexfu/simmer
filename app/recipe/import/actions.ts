@@ -31,7 +31,12 @@ export async function extractRecipeFromUpload(
   const collectDiagnostics = formData.get("diagnostics") === "true";
 
   if (!file || file.size === 0) {
-    return { status: "error", errors: ["Please select a file."], data: null, diagnosticLog: null };
+    return {
+      status: "error",
+      errors: ["Please select a file."],
+      data: null,
+      diagnosticLog: null,
+    };
   }
 
   if (!ALLOWED_TYPES.includes(file.type)) {
@@ -121,7 +126,11 @@ export async function extractRecipeFromPaste(
   }
 
   try {
-    const result = await extractRecipeFromText(text, settings, collectDiagnostics);
+    const result = await extractRecipeFromText(
+      text,
+      settings,
+      collectDiagnostics,
+    );
     return {
       status: "success",
       errors: [],

@@ -49,9 +49,7 @@ export function InstructionFieldList({
   const dndId = useId();
 
   // Generate stable IDs for sortable items
-  const [itemIds] = useState(() =>
-    instructions.map(() => uuidv4()),
-  );
+  const [itemIds] = useState(() => instructions.map(() => uuidv4()));
 
   // Keep IDs in sync with instruction count
   while (itemIds.length < instructions.length) {
@@ -119,10 +117,7 @@ export function InstructionFieldList({
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <SortableContext
-          items={itemIds}
-          strategy={verticalListSortingStrategy}
-        >
+        <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
           {instructions.map((row, index) => (
             <SortableInstructionRow
               key={itemIds[index]}
@@ -206,12 +201,7 @@ function SortableInstructionRow({
             {...attributes}
             {...listeners}
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <circle cx="9" cy="6" r="1.5" />
               <circle cx="15" cy="6" r="1.5" />
               <circle cx="9" cy="12" r="1.5" />

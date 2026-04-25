@@ -25,7 +25,11 @@ interface IngredientOption {
 
 const IngredientsContext = createContext<IngredientOption[]>([]);
 
-function IngredientChip({ node }: { node: { attrs: Record<string, unknown> } }) {
+function IngredientChip({
+  node,
+}: {
+  node: { attrs: Record<string, unknown> };
+}) {
   const ingredients = useContext(IngredientsContext);
   const name = String(node.attrs.name ?? "");
   const ingredient = ingredients.find(
@@ -106,9 +110,7 @@ function tagsToHtml(text: string): string {
   return `<p>${html}</p>`;
 }
 
-function editorToTaggedText(
-  editor: ReturnType<typeof useEditor>,
-): string {
+function editorToTaggedText(editor: ReturnType<typeof useEditor>): string {
   if (!editor) return "";
 
   const json = editor.getJSON();

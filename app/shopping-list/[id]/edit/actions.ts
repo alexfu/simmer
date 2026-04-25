@@ -128,7 +128,11 @@ export async function addIngredientsToList(
   });
 
   const allIngredients = [
-    ...existing.map((i) => ({ name: i.name, quantity: i.quantity, unit: i.unit })),
+    ...existing.map((i) => ({
+      name: i.name,
+      quantity: i.quantity,
+      unit: i.unit,
+    })),
     ...ingredients,
   ];
 
