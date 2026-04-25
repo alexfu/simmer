@@ -129,13 +129,24 @@ function parseRecipeJson(raw: string): ExtractedRecipe {
     throw new Error("AI could not extract any instructions.");
   }
 
-  return { title, description, notes, imageUrl: null, servings, ingredients, instructions };
+  return {
+    title,
+    description,
+    notes,
+    imageUrl: null,
+    servings,
+    ingredients,
+    instructions,
+  };
 }
+
+type ProgressCallback = (phase: string) => void;
 
 export async function extractRecipeFromFile(
   file: { base64: string; mimeType: string },
   settings: Settings,
   collectDiagnostics = false,
+  onProgress?: ProgressCallback,
 ): Promise<ExtractionResult> {
   const apiKey = getApiKey(settings);
   const model = settings.activeModel;
@@ -143,42 +154,80 @@ export async function extractRecipeFromFile(
   const phases: DiagnosticPhase[] = [];
 
   // Phase 1: OCR
+  onProgress?.("ocr");
   const ocrPrompt = OCR_PROMPT;
   const rawText = await callVision(
-    provider, apiKey, model, ocrPrompt, file.base64, file.mimeType,
+    provider,
+    apiKey,
+    model,
+    ocrPrompt,
+    file.base64,
+    file.mimeType,
   );
   if (collectDiagnostics) {
     phases.push({ name: "ocr", prompt: ocrPrompt, response: rawText });
   }
 
   // Phase 2: Structure
+  onProgress?.("structure");
   const structurePrompt = `${STRUCTURE_PROMPT}\n\nRecipe text:\n${rawText}`;
-  const structuredRaw = await callText(provider, apiKey, model, structurePrompt);
+  const structuredRaw = await callText(
+    provider,
+    apiKey,
+    model,
+    structurePrompt,
+  );
   const structured = parseRecipeJson(structuredRaw);
   if (collectDiagnostics) {
-    phases.push({ name: "structure", prompt: structurePrompt, response: structuredRaw, parsed: structured });
+    phases.push({
+      name: "structure",
+      prompt: structurePrompt,
+      response: structuredRaw,
+      parsed: structured,
+    });
   }
 
   // Phase 3: Split
+  onProgress?.("split");
   const splitPrompt = `${SPLIT_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(structured, null, 2)}`;
   const splitRaw = await callText(provider, apiKey, model, splitPrompt);
   const split = parseRecipeJson(splitRaw);
   if (collectDiagnostics) {
-    phases.push({ name: "split", prompt: splitPrompt, response: splitRaw, parsed: split });
+    phases.push({
+      name: "split",
+      prompt: splitPrompt,
+      response: splitRaw,
+      parsed: split,
+    });
   }
 
   // Phase 4: Tagging
+  onProgress?.("tagging");
   const tagPrompt = `${TAGGING_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(split, null, 2)}`;
   const taggedRaw = await callText(provider, apiKey, model, tagPrompt);
   const finalResult = parseRecipeJson(taggedRaw);
   if (collectDiagnostics) {
-    phases.push({ name: "tagging", prompt: tagPrompt, response: taggedRaw, parsed: finalResult });
+    phases.push({
+      name: "tagging",
+      prompt: tagPrompt,
+      response: taggedRaw,
+      parsed: finalResult,
+    });
   }
+
+  onProgress?.("done");
 
   return {
     recipe: finalResult,
     diagnosticLog: collectDiagnostics
-      ? { provider, model, timestamp: new Date().toISOString(), source: "file", phases, finalResult }
+      ? {
+          provider,
+          model,
+          timestamp: new Date().toISOString(),
+          source: "file",
+          phases,
+          finalResult,
+        }
       : undefined,
   };
 }
@@ -187,6 +236,7 @@ export async function extractRecipeFromText(
   text: string,
   settings: Settings,
   collectDiagnostics = false,
+  onProgress?: ProgressCallback,
 ): Promise<ExtractionResult> {
   const apiKey = getApiKey(settings);
   const model = settings.activeModel;
@@ -194,33 +244,65 @@ export async function extractRecipeFromText(
   const phases: DiagnosticPhase[] = [];
 
   // Phase 1: Structure
+  onProgress?.("structure");
   const structurePrompt = `${STRUCTURE_PROMPT}\n\nRecipe text:\n${text}`;
-  const structuredRaw = await callText(provider, apiKey, model, structurePrompt);
+  const structuredRaw = await callText(
+    provider,
+    apiKey,
+    model,
+    structurePrompt,
+  );
   const structured = parseRecipeJson(structuredRaw);
   if (collectDiagnostics) {
-    phases.push({ name: "structure", prompt: structurePrompt, response: structuredRaw, parsed: structured });
+    phases.push({
+      name: "structure",
+      prompt: structurePrompt,
+      response: structuredRaw,
+      parsed: structured,
+    });
   }
 
   // Phase 2: Split
+  onProgress?.("split");
   const splitPrompt = `${SPLIT_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(structured, null, 2)}`;
   const splitRaw = await callText(provider, apiKey, model, splitPrompt);
   const split = parseRecipeJson(splitRaw);
   if (collectDiagnostics) {
-    phases.push({ name: "split", prompt: splitPrompt, response: splitRaw, parsed: split });
+    phases.push({
+      name: "split",
+      prompt: splitPrompt,
+      response: splitRaw,
+      parsed: split,
+    });
   }
 
   // Phase 3: Tagging
+  onProgress?.("tagging");
   const tagPrompt = `${TAGGING_PROMPT}\n\nRecipe JSON:\n${JSON.stringify(split, null, 2)}`;
   const taggedRaw = await callText(provider, apiKey, model, tagPrompt);
   const finalResult = parseRecipeJson(taggedRaw);
   if (collectDiagnostics) {
-    phases.push({ name: "tagging", prompt: tagPrompt, response: taggedRaw, parsed: finalResult });
+    phases.push({
+      name: "tagging",
+      prompt: tagPrompt,
+      response: taggedRaw,
+      parsed: finalResult,
+    });
   }
+
+  onProgress?.("done");
 
   return {
     recipe: finalResult,
     diagnosticLog: collectDiagnostics
-      ? { provider, model, timestamp: new Date().toISOString(), source: "text", phases, finalResult }
+      ? {
+          provider,
+          model,
+          timestamp: new Date().toISOString(),
+          source: "text",
+          phases,
+          finalResult,
+        }
       : undefined,
   };
 }
